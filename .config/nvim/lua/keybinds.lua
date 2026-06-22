@@ -1,3 +1,8 @@
+-- slipnote.nvim
+vim.api.nvim_set_keymap("n", "<leader>if", ":InsertFrontmatter<CR>", { desc = "Insert YAML frontmatter" })
+vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow link at cursor" })
+vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
+
 local minifiles_toggle = function()
 	if not MiniFiles.close() then
 		MiniFiles.open()
