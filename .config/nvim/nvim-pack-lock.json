@@ -5,13 +5,18 @@
       "src": "https://github.com/stevearc/conform.nvim",
       "version": "'master'"
     },
+    "lazygit.nvim": {
+      "rev": "a04ad0dbc725134edbee3a5eea29290976695357",
+      "src": "https://github.com/kdheepak/lazygit.nvim",
+      "version": "'main'"
+    },
     "mini.nvim": {
-      "rev": "bf8169f3e518be8de3f88073ace37d91f576cb04",
+      "rev": "1345d191bb3da9c7b0e977f4387c5761f9bff68d",
       "src": "https://github.com/nvim-mini/mini.nvim",
       "version": "'main'"
     },
     "nvim-lspconfig": {
-      "rev": "96f363ce07d46c1804532ca2d1eb3a157d11ee29",
+      "rev": "bfcc0171a43f22afa61d927ffe9fcb6cb85dc99e",
       "src": "https://github.com/neovim/nvim-lspconfig",
       "version": "'master'"
     },
@@ -21,7 +26,7 @@
       "version": "'4916d6592ede8c07973490d9322f187e07dfefac'"
     },
     "slipnote.nvim": {
-      "rev": "41f0cf2fae42edafb6f743d3334a1feb2a87226f",
+      "rev": "b68a151072fbc4e4aeb80eb1b1a50847a08434a0",
       "src": "https://github.com/den1kon/slipnote.nvim",
       "version": "'main'"
     },

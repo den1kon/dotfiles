@@ -11,46 +11,30 @@ vim.pack.add({
 	{ src = "https://github.com/den1kon/slipnote.nvim", version = "main" },
 	{ src = "https://github.com/neovim/nvim-lspconfig", version = "master" },
 	{ src = "https://github.com/mbbill/undotree", version = "master" },
+	{ src = "https://github.com/kdheepak/lazygit.nvim", version = "main" },
 })
 
 require("treesitter")
-require("fmt")
+require("fmt") -- conform.nvim
+require("mininvim")
 
 vim.cmd([[colorscheme tokyonight-night]])
 
--- MINI.NVIM ====================================================================================================
-
--- mini.files----------------------------------------------------------------------------------------------------
-require("mini.files").setup()
-
---------------------------------------------------
-require("mini.icons").setup()
-require("mini.pick").setup()
-require("mini.indentscope").setup()
-require("mini.trailspace").setup()
-require("mini.visits").setup()
-require("mini.git").setup()
-require("mini.diff").setup({
-	view = {
-		-- Visualization style. Possible values are 'sign' and 'number'.
-		style = "sign",
+require("slipnote").setup({
+	conceal = {
+		enable = true,
+		wikilinks = true,
+		cursor = "",
+	},
+	frontmatter = {
+		enable = true,
 	},
 })
-require("mini.statusline").setup()
-require("mini.extra").setup()
-require("mini.cmdline").setup()
-require("mini.completion").setup()
-require("mini.notify").setup()
-require("miniclue")
-
------------------------------------------------------------------------------------------------------------------
-
-require("slipnote").setup()
 
 require("keybinds")
 
 require("lsp").setup()
 
-vim.lsp.enable({ "clangd", "lua_ls", "nil_ls", "markdown_oxide", "phpactor", "ts_ls", "tinymist" })
+vim.lsp.enable({ "clangd", "lua_ls", "nil_ls", "phpactor", "ts_ls", "tinymist" })
 
 require("marks")
