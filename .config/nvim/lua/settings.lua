@@ -64,7 +64,7 @@ vim.opt.pummaxwidth = 100
 vim.opt.pumborder = "bold"
 
 -- Enable experimental ui
-require("vim._core.ui2").enable()
+-- require("vim._core.ui2").enable()
 
 -- Copy indent from current line to next.
 vim.opt.autoindent = true
