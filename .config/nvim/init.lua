@@ -35,6 +35,4 @@ require("keybinds")
 
 require("lsp").setup()
 
-vim.lsp.enable({ "clangd", "lua_ls", "nil_ls", "phpactor", "ts_ls", "tinymist" })
-
 require("marks")
