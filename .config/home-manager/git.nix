@@ -22,9 +22,20 @@
 
     includes = [
       {
-        condition = "gitdir:~/gitLair/check24";
+        condition = "gitdir:~/gitLair/check24/thv/thv-core";
         contents = {
-          # Work email
+          user.email = "denys.kondratiuk@check24.de";
+        };
+      }
+      {
+        condition = "gitdir:~/gitLair/check24/thv/thv-desktop";
+        contents = {
+          user.email = "denys.kondratiuk@check24.de";
+        };
+      }
+      {
+        condition = "gitdir:~/gitLair/check24/thv/thv-mobile";
+        contents = {
           user.email = "denys.kondratiuk@check24.de";
         };
       }
