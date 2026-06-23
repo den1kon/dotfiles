@@ -51,7 +51,9 @@ require("conform").setup({
 	notify_on_error = true,
 })
 
-local function format()
+local M = {}
+
+function M.format_buffer()
 	require("conform").format({ async = true, lsp_format = "fallback" }, function(err)
 		if not err then
 			local mode = vim.api.nvim_get_mode().mode
@@ -62,4 +64,4 @@ local function format()
 	end)
 end
 
-vim.keymap.set("n", "<leader>fl", format)
+return M

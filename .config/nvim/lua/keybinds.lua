@@ -1,3 +1,5 @@
+local Formatter = require("fmt")
+
 -- slipnote.nvim
 vim.api.nvim_set_keymap("n", "<leader>if", ":InsertFrontmatter<CR>", { desc = "Insert YAML frontmatter" })
 vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow link at cursor" })
@@ -72,3 +74,9 @@ vim.keymap.set({ "s", "i", "n", "v" }, "<C-s>", "<esc>:w<cr>", { desc = "Exit in
 
 -- Undotree
 vim.keymap.set("n", "<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle Undotree" })
+
+-- Format
+vim.keymap.set("n", "<leader>fb", Formatter.format_buffer, { desc = "Format buffer" })
+
+-- LazyGit
+vim.keymap.set("n", "<leader>lg", ":LazyGit<CR>", { desc = "Open LazyGit" })
