@@ -22,7 +22,7 @@ vim.api.nvim_set_decoration_provider(ns, {
 
         -- Global marks
         for _, mark in ipairs(vim.fn.getmarklist()) do
-            if mark.mark:match '^.[a-zA-Z]$' then
+            if mark.mark:match '^.[a-zA-Z0-9]$' then
                 local mark_file = vim.fn.fnamemodify(mark.file, ':p:a')
                 if current_file == mark_file then
                     decor_mark(bufnr, mark)

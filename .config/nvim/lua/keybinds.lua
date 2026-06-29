@@ -5,22 +5,36 @@ vim.api.nvim_set_keymap("n", "<leader>if", ":InsertFrontmatter<CR>", { desc = "I
 vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow link at cursor" })
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
 
+-- MiniFiles
 local minifiles_toggle = function()
 	if not MiniFiles.close() then
 		MiniFiles.open()
 	end
 end
 
+local minifiles_toggle_here = function()
+	if not MiniFiles.close() then
+		MiniFiles.open(vim.fn.expand("%:p:h"))
+	end
+end
+
+vim.api.nvim_create_user_command("MiniFiles", minifiles_toggle, { desc = "Toggle MiniFiles" })
+vim.api.nvim_create_user_command("MiniFilesHere", minifiles_toggle_here, { desc = "Toggle MiniDiff Here" })
+
+vim.api.nvim_set_keymap("n", "<leader>fe", ":MiniFiles<CR>", { desc = "File Explorer" })
+vim.api.nvim_set_keymap("n", "<leader>feh", ":MiniFilesHere<CR>", { desc = "File Explorer Here" })
+
+-- MiniDiff
 local function minidiff_toggle()
 	MiniDiff.toggle_overlay(vim.api.nvim_get_current_buf())
 end
 
-vim.api.nvim_create_user_command("MiniFiles", minifiles_toggle, { desc = "Toggle MiniFiles" })
 vim.api.nvim_create_user_command("ToggleMiniDiff", minidiff_toggle, { desc = "Toggle MiniDiff" })
 
-vim.api.nvim_set_keymap("n", "<leader>fe", ":MiniFiles<CR>", { desc = "File explorer" })
+vim.api.nvim_set_keymap("n", "<leader>td", ":ToggleMiniDiff<CR>", { desc = "Pick help" })
 
--- Pickers
+
+-- MiniPick
 vim.api.nvim_set_keymap("n", "<leader>pf", ":Pick files<CR>", { desc = "Pick files" })
 vim.api.nvim_set_keymap("n", "<leader>pgl", ":Pick grep_live<CR>", { desc = "Pick grep_live" })
 vim.api.nvim_set_keymap("n", "<leader>pvp", ":Pick visit_paths<CR>", { desc = "Pick visit_paths" })
@@ -28,8 +42,17 @@ vim.api.nvim_set_keymap("n", "<leader>pr", ":Pick registers<CR>", { desc = "Pick
 vim.api.nvim_set_keymap("n", "<leader>pgf", ":Pick git_files<CR>", { desc = "Pick git_files" })
 vim.api.nvim_set_keymap("n", "<leader>ph", ":Pick help<CR>", { desc = "Pick help" })
 
--- MiniDiff
-vim.api.nvim_set_keymap("n", "<leader>to", ":ToggleMiniDiff<CR>", { desc = "Pick help" })
+-- Undotree
+vim.keymap.set("n", "<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle Undotree" })
+
+-- Format (conform.nvim)
+vim.keymap.set("n", "<leader>fb", Formatter.format_buffer, { desc = "Format buffer" })
+
+-- LazyGit
+vim.keymap.set("n", "<leader>lg", ":LazyGit<CR>", { desc = "Open LazyGit" })
+
+-- RenderMarkdown
+vim.keymap.set({ "n" }, "<leader>rm", ":RenderMarkdown toggle<CR>", { desc = "Toggle RenderMarkdown" })
 
 -- Misc
 vim.keymap.set("n", "<leader>od", vim.diagnostic.open_float)
@@ -72,11 +95,23 @@ vim.keymap.set("n", "U", "<C-r>", { desc = "Redo" })
 -- Escape and save changes.
 vim.keymap.set({ "s", "i", "n", "v" }, "<C-s>", "<esc>:w<cr>", { desc = "Exit insert mode and save changes" })
 
--- Undotree
-vim.keymap.set("n", "<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle Undotree" })
+-- QoL
+vim.keymap.set("n", "<leader>ycp", function()
+	local path = vim.fn.expand("%:p")
+	if path == "" then
+		vim.notify("No file path for this buffer", vim.log.levels.WARN)
+		return
+	end
+	vim.fn.setreg("+", path)
+	vim.notify("Yanked: " .. path)
+end, { desc = "Yank current file absolute path" })
 
--- Format
-vim.keymap.set("n", "<leader>fb", Formatter.format_buffer, { desc = "Format buffer" })
+-- LSP
+vim.keymap.set("n", "<leader>lr", function()
+	MiniExtra.pickers.lsp({ scope = "references" })
+end, { desc = "Pick LSP references" })
+vim.keymap.set("n", "<leader>ld", function()
+	MiniExtra.pickers.lsp({ scope = "definition" })
+end, { desc = "Pick LSP definition" })
 
--- LazyGit
-vim.keymap.set("n", "<leader>lg", ":LazyGit<CR>", { desc = "Open LazyGit" })
+vim.keymap.set({ "n" }, "<leader>q", "<esc>:q<cr>", { desc = "Exit" })
