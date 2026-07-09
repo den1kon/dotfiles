@@ -11,12 +11,12 @@
       "version": "'main'"
     },
     "mini.nvim": {
-      "rev": "1345d191bb3da9c7b0e977f4387c5761f9bff68d",
+      "rev": "fdc8b9701616863e44f7a7a0802cfe16bd866539",
       "src": "https://github.com/nvim-mini/mini.nvim",
       "version": "'main'"
     },
     "nvim-lspconfig": {
-      "rev": "bfcc0171a43f22afa61d927ffe9fcb6cb85dc99e",
+      "rev": "d224a1920728ba129880efc700d4a0180ac4ecbb",
       "src": "https://github.com/neovim/nvim-lspconfig",
       "version": "'master'"
     },
@@ -31,7 +31,7 @@
       "version": "'main'"
     },
     "slipnote.nvim": {
-      "rev": "b68a151072fbc4e4aeb80eb1b1a50847a08434a0",
+      "rev": "eb89ae10af5ee764cc4144e8cf0d16173953a23c",
       "src": "https://github.com/den1kon/slipnote.nvim",
       "version": "'main'"
     },
