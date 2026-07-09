@@ -44,6 +44,7 @@ in
   home.stateVersion = "25.11";
 
   home.packages = [
+    # wireshark
     # php85
     # php85Packages.composer
     # symfony-cli
