@@ -84,3 +84,5 @@ vim.opt.virtualedit = "block"
 vim.opt.complete = ".,w,b" -- Use less sources.
 vim.opt.completeopt = "menuone,noselect,fuzzy,nosort" -- Use custom behavior
 
+-- Stay centered
+vim.opt.scrolloff = 999
