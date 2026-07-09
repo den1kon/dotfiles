@@ -14,15 +14,6 @@
         "$git_commit"
         "$git_state"
         "$git_status"
-        "$package"
-        "$haskell"
-        "$python"
-        "$rust"
-        "$php"
-        "$nix_shell"
-        "$line_break"
-        "$jobs"
-        "$character"
       ];
     };
   };
