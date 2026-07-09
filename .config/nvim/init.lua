@@ -19,7 +19,7 @@ vim.pack.add({
 require("treesitter")
 require("fmt") -- conform.nvim
 
-vim.cmd([[colorscheme tokyonight-night]])
+vim.cmd([[colorscheme tokyonight-storm]])
 
 require("keybinds")
 require("marks")
