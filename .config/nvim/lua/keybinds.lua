@@ -4,6 +4,7 @@ local Formatter = require("fmt")
 vim.api.nvim_set_keymap("n", "<leader>if", ":InsertFrontmatter<CR>", { desc = "Insert YAML frontmatter" })
 vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow link at cursor" })
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
+vim.api.nvim_set_keymap("n", "<leader>gb", ":FollowBack<CR>", { desc = "Go back (Follow Back)" })
 
 -- MiniFiles
 local minifiles_toggle = function()
@@ -22,7 +23,7 @@ vim.api.nvim_create_user_command("MiniFiles", minifiles_toggle, { desc = "Toggle
 vim.api.nvim_create_user_command("MiniFilesHere", minifiles_toggle_here, { desc = "Toggle MiniDiff Here" })
 
 vim.api.nvim_set_keymap("n", "<leader>fe", ":MiniFiles<CR>", { desc = "File Explorer" })
-vim.api.nvim_set_keymap("n", "<leader>feh", ":MiniFilesHere<CR>", { desc = "File Explorer Here" })
+vim.api.nvim_set_keymap("n", "<leader>fh", ":MiniFilesHere<CR>", { desc = "File explorer Here" })
 
 -- MiniDiff
 local function minidiff_toggle()
