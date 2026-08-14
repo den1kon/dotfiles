@@ -44,6 +44,7 @@
             ./starship.nix
             ./man.nix
             ./tealdeer.nix
+            ./npm.nix
           ];
         };
         thinkpad = {

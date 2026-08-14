@@ -52,6 +52,8 @@
 
           # New Profile Switcher is fundamentally broken atm
           "browser.profiles.enabled" = false; # new profile switcher
+
+          "browser.toolbars.bookmarks.visibility" = "always"; # bookmars visiblity
         };
 
         containersForce = true;

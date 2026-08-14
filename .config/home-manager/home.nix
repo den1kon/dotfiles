@@ -19,6 +19,8 @@ let
         imagick
         redis
         xsl
+        igbinary
+        pspell
       ])
     );
     extraConfig = ''
@@ -44,11 +46,16 @@ in
   home.stateVersion = "25.11";
 
   home.packages = [
+    # qtcreator
+    qt5.qtbase
+    yaak
+    bruno
     # wireshark
     # php85
     # php85Packages.composer
     # symfony-cli
     # telegram-desktop
+    prismlauncher
     vaultwarden-postgresql
     tree-sitter-cli
     neovim
