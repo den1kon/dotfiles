@@ -5,7 +5,11 @@ require("mini.files").setup()
 
 --------------------------------------------------
 require("mini.icons").setup()
-require("mini.pick").setup()
+require("mini.pick").setup({
+	options = {
+		use_cache = true,
+	},
+})
 require("mini.indentscope").setup({
 	symbol = "│",
 })
