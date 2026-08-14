@@ -88,6 +88,8 @@ in
     ripgrep
     fd
 
+    maccy
+
     # clang-tools
 
     iosevkaTermNerdFont
