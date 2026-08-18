@@ -28,6 +28,9 @@ require("mini.cmdline").setup()
 require("mini.completion").setup()
 require("mini.notify").setup()
 require("miniclue")
+require("mini.starter").setup({
+  header = "Кавачай"
+})
 
 require("mini.tabline").setup()
 
