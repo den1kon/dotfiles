@@ -46,6 +46,8 @@ in
   home.stateVersion = "25.11";
 
   home.packages = [
+    dbeaver-bin
+    claude-code
     # qtcreator
     qt5.qtbase
     yaak
