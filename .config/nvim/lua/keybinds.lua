@@ -97,7 +97,7 @@ vim.keymap.set("n", "U", "<C-r>", { desc = "Redo" })
 vim.keymap.set({ "s", "i", "n", "v" }, "<C-s>", "<esc>:w<cr>", { desc = "Exit insert mode and save changes" })
 
 -- QoL
-vim.keymap.set("n", "<leader>ycp", function()
+vim.keymap.set("n", "<leader>yap", function()
 	local path = vim.fn.expand("%:p")
 	if path == "" then
 		vim.notify("No file path for this buffer", vim.log.levels.WARN)
@@ -105,7 +105,28 @@ vim.keymap.set("n", "<leader>ycp", function()
 	end
 	vim.fn.setreg("+", path)
 	vim.notify("Yanked: " .. path)
-end, { desc = "Yank current file absolute path" })
+end, { desc = "Yank current file Absolute Path" })
+
+vim.keymap.set("n", "<leader>yrp", function()
+	local path = vim.fn.fnamemodify(vim.fn.expand("%:p"), ":~:.")
+	if path == "" then
+		vim.notify("No file path for this buffer", vim.log.levels.WARN)
+		return
+	end
+	vim.fn.setreg("+", path)
+	vim.notify("Yanked: " .. path)
+end, { desc = "Yank current file Relative Path" })
+
+vim.keymap.set("n", "<leader>yfn", function()
+	local path = vim.fn.expand("%:p:t")
+	if path == "" then
+		vim.notify("No file path for this buffer", vim.log.levels.WARN)
+		return
+	end
+	vim.fn.setreg("+", path)
+	vim.notify("Yanked: " .. path)
+end, { desc = "Yank current File Name" })
+
 
 -- LSP
 vim.keymap.set("n", "<leader>lr", function()
