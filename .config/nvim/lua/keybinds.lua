@@ -42,6 +42,14 @@ vim.api.nvim_set_keymap("n", "<leader>pvp", ":Pick visit_paths<CR>", { desc = "P
 vim.api.nvim_set_keymap("n", "<leader>pr", ":Pick registers<CR>", { desc = "Pick registers" })
 vim.api.nvim_set_keymap("n", "<leader>pgf", ":Pick git_files<CR>", { desc = "Pick git_files" })
 vim.api.nvim_set_keymap("n", "<leader>ph", ":Pick help<CR>", { desc = "Pick help" })
+vim.api.nvim_set_keymap("n", "<leader>pb", ":Pick buffers<CR>", { desc = "Pick buffers" })
+-- LSP
+vim.keymap.set("n", "<leader>lr", function()
+	MiniExtra.pickers.lsp({ scope = "references" })
+end, { desc = "Pick LSP references" })
+vim.keymap.set("n", "<leader>ld", function()
+	MiniExtra.pickers.lsp({ scope = "definition" })
+end, { desc = "Pick LSP definition" })
 
 -- Undotree
 vim.keymap.set("n", "<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle Undotree" })
@@ -63,11 +71,11 @@ vim.keymap.set("n", "[p", '<Cmd>exe "iput! " . v:register<CR>', { desc = "Paste 
 vim.keymap.set("n", "]p", '<Cmd>exe "iput "  . v:register<CR>', { desc = "Paste Below" })
 
 -- Keeping the cursor centered.
-vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll downwards" })
-vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll upwards" })
+-- vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll downwards" })
+-- vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll upwards" })
 vim.keymap.set("n", "n", "nzzzv", { desc = "Next result" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous result" })
-vim.keymap.set("n", "G", "Gzz", { desc = "Goto last line" })
+-- vim.keymap.set("n", "G", "Gzz", { desc = "Goto last line" })
 
 -- Indent while remaining in visual mode.
 vim.keymap.set("v", "<", "<gv")
@@ -127,13 +135,5 @@ vim.keymap.set("n", "<leader>yfn", function()
 	vim.notify("Yanked: " .. path)
 end, { desc = "Yank current File Name" })
 
-
--- LSP
-vim.keymap.set("n", "<leader>lr", function()
-	MiniExtra.pickers.lsp({ scope = "references" })
-end, { desc = "Pick LSP references" })
-vim.keymap.set("n", "<leader>ld", function()
-	MiniExtra.pickers.lsp({ scope = "definition" })
-end, { desc = "Pick LSP definition" })
 
 vim.keymap.set({ "n" }, "<leader>q", "<esc>:q<cr>", { desc = "Exit" })
