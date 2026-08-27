@@ -8,10 +8,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     textfox.url = "github:adriankarlen/textfox";
-    tree-sitter = {
-      url = "github:tree-sitter/tree-sitter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # tree-sitter = {
+    #   url = "github:tree-sitter/tree-sitter";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
   };
 
   outputs =
@@ -19,7 +19,7 @@
       nixpkgs,
       home-manager,
       textfox,
-      tree-sitter,
+      # tree-sitter,
       ...
     }:
     let
@@ -44,20 +44,28 @@
             ./starship.nix
             ./man.nix
             ./tealdeer.nix
-            ./npm.nix
           ];
         };
-        thinkpad = {
+        linux = {
           system = "x86_64-linux";
           username = "dk";
           modules = [
             textfox.homeManagerModules.default
-            ./home.nix
             ./bash.nix
+            ./home.nix
             ./firefox.nix
-            ./gtk.nix
+            ./git.nix
+            ./alacritty.nix
+            ./tmux.nix
             ./delta.nix
             ./lazygit.nix
+            ./zsh.nix
+            ./eza.nix
+            ./bat.nix
+            ./zoxide.nix
+            ./starship.nix
+            ./man.nix
+            ./tealdeer.nix
           ];
         };
       };
@@ -72,7 +80,7 @@
           modules = config.modules;
           extraSpecialArgs = {
             inherit (config) system username;
-            tree-sitter-cli = tree-sitter.packages.${config.system}.cli;
+            # tree-sitter-cli = tree-sitter.packages.${config.system}.cli;
           };
         };
     in

@@ -3,7 +3,7 @@
   pkgs,
   username,
   system,
-  tree-sitter-cli,
+  # tree-sitter-cli,
   ...
 }:
 
@@ -31,8 +31,7 @@ let
   homeDirectory = if system == "aarch64-darwin" then "/Users/${username}" else "/home/${username}";
 
   isMacbook = system == "aarch64-darwin";
-  isThinkpad = system == "x86_64-linux";
-  isLinux = isThinkpad;
+  isLinux = system == "x86_64-linux";
 
   iosevkaTermNerdFont = nerd-fonts.iosevka-term;
 
@@ -43,29 +42,24 @@ in
   home.homeDirectory = homeDirectory;
 
   nixpkgs.config.allowUnfree = true;
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.11";
 
   home.packages = [
     dbeaver-bin
-    claude-code
-    # qtcreator
-    qt5.qtbase
     yaak
     bruno
-    # wireshark
-    # php85
-    # php85Packages.composer
-    # symfony-cli
-    # telegram-desktop
+
     prismlauncher
-    vaultwarden-postgresql
-    tree-sitter-cli
+
     neovim
+
     imagemagick
     redis
     nodejs_24
-    adminer
 
+    # Treesitter/LSP
+    # tree-sitter-cli
+    tree-sitter
     markdown-oxide
     lua-language-server
     typescript-language-server
@@ -90,21 +84,13 @@ in
     ripgrep
     fd
 
-    maccy
-
-    # clang-tools
-
     iosevkaTermNerdFont
   ]
   ++ (
     if isMacbook then
       [
-        # usbutils
-        fritzing
-        signal-desktop
-        obsidian
-        # osu-lazer-bin
-        # spotify-player
+        maccy
+        claude-code
         spotify
         vagrant
 
@@ -115,15 +101,17 @@ in
         (php82Packages.composer.override { inherit php; })
         anki-bin
 
-        spotify-player
+        # spotify-player
       ]
     else
       [ ]
   )
   ++ (
-    if isThinkpad then
+    if isLinux then
       [
-        spotify-player
+        glibc
+        clang
+        wl-clipboard
       ]
     else
       [ ]

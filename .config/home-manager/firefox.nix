@@ -25,7 +25,7 @@
     profiles = {
       denikon = {
         isDefault = true;
-        id = 000;
+        id = 0;
         settings = {
           "browser.startup.homepage" = "";
           "shyfox.enable.ext.mono.toolbar.icons" = true;
@@ -77,19 +77,19 @@
       };
 
       personal = {
-        id = 001;
+        id = 1;
         settings = {
         };
       };
 
       work = {
-        id = 002;
+        id = 2;
         settings = {
         };
       };
 
       edu = {
-        id = 003;
+        id = 3;
         settings = {
         };
       };
