@@ -45,11 +45,13 @@ in
   home.stateVersion = "26.11";
 
   home.packages = [
+    # GUI
     dbeaver-bin
     yaak
     bruno
-
     prismlauncher
+
+    gnumake
 
     neovim
 
