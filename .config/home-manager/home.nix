@@ -49,7 +49,7 @@ in
     dbeaver-bin
     yaak
     bruno
-    prismlauncher
+    # prismlauncher
 
     gnumake
 
