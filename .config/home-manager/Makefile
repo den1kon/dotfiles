@@ -14,3 +14,6 @@ macbook:
 
 clean:
 	nix-collect-garbage -d
+
+update:
+	nix flake update
