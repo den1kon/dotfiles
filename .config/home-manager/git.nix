@@ -22,33 +22,15 @@
 
     includes = [
       {
-        condition = "gitdir:~/gitLair/check24/thv/thv-core";
-        contents = {
-          user.email = "denys.kondratiuk@check24.de";
-        };
-      }
-      {
-        condition = "gitdir:~/.dotfiles";
+        condition = "gitdir:~/.dotfiles/";
         contents = {
           user.email = "dkondratiuk@pm.me";
         };
       }
       {
-        condition = "gitdir:~/gitlair/digital-notes";
+        condition = "gitdir:~/gitLair/digital-notes/";
         contents = {
           user.email = "dkondratiuk@pm.me";
-        };
-      }
-      {
-        condition = "gitdir:~/gitLair/check24/thv/thv-desktop";
-        contents = {
-          user.email = "denys.kondratiuk@check24.de";
-        };
-      }
-      {
-        condition = "gitdir:~/gitLair/check24/thv/thv-mobile";
-        contents = {
-          user.email = "denys.kondratiuk@check24.de";
         };
       }
     ];
