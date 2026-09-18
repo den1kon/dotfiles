@@ -9,7 +9,7 @@ help:
 linux:
 	home-manager switch --flake .#linux
 
-macbook:
+mac:
 	home-manager switch --flake .#macbook
 
 clean:
