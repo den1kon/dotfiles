@@ -21,12 +21,12 @@ require("fmt") -- conform.nvim
 
 vim.cmd([[colorscheme tokyonight-storm]])
 
-require("keybinds")
 require("marks")
 
 require("lsp").setup()
 
 -- extended minifiles
 require("minifiles").setup()
+require("keybinds")
 
 require("markdown")

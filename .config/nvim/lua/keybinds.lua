@@ -34,13 +34,18 @@ vim.api.nvim_create_user_command("ToggleMiniDiff", minidiff_toggle, { desc = "To
 
 vim.api.nvim_set_keymap("n", "<leader>td", ":ToggleMiniDiff<CR>", { desc = "Pick help" })
 
-
 -- MiniPick
 vim.api.nvim_set_keymap("n", "<leader>pf", ":Pick files<CR>", { desc = "Pick files" })
 vim.api.nvim_set_keymap("n", "<leader>pgl", ":Pick grep_live<CR>", { desc = "Pick grep_live" })
 vim.api.nvim_set_keymap("n", "<leader>pvp", ":Pick visit_paths<CR>", { desc = "Pick visit_paths" })
 vim.api.nvim_set_keymap("n", "<leader>pr", ":Pick registers<CR>", { desc = "Pick registers" })
 vim.api.nvim_set_keymap("n", "<leader>pgf", ":Pick git_files<CR>", { desc = "Pick git_files" })
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>pgmf",
+	":Pick git_files scope='modified'<CR>",
+	{ desc = "Pick Git Modified Files" }
+)
 vim.api.nvim_set_keymap("n", "<leader>ph", ":Pick help<CR>", { desc = "Pick help" })
 vim.api.nvim_set_keymap("n", "<leader>pb", ":Pick buffers<CR>", { desc = "Pick buffers" })
 -- LSP
@@ -50,6 +55,14 @@ end, { desc = "Pick LSP references" })
 vim.keymap.set("n", "<leader>ld", function()
 	MiniExtra.pickers.lsp({ scope = "definition" })
 end, { desc = "Pick LSP definition" })
+
+-- MiniBufremove
+local function minibufremove_delete()
+	MiniBufremove.delete()
+end
+
+vim.api.nvim_create_user_command("MiniBufremoveDelete", minibufremove_delete, { desc = "MiniBufremove Delete" })
+vim.api.nvim_set_keymap("n", "<leader>bd", ":MiniBufremoveDelete<CR>", { desc = "Buffer Delete" })
 
 -- Undotree
 vim.keymap.set("n", "<leader>ut", ":UndotreeToggle<CR>", { desc = "Toggle Undotree" })
@@ -134,6 +147,5 @@ vim.keymap.set("n", "<leader>yfn", function()
 	vim.fn.setreg("+", path)
 	vim.notify("Yanked: " .. path)
 end, { desc = "Yank current File Name" })
-
 
 vim.keymap.set({ "n" }, "<leader>q", "<esc>:q<cr>", { desc = "Exit" })
