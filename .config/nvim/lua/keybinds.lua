@@ -6,6 +6,12 @@ vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow l
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
 vim.api.nvim_set_keymap("n", "<leader>gb", ":FollowBack<CR>", { desc = "Go back (Follow Back)" })
 
+-- Open 'YYYY-MM-DD.md' buffer (Daily note)
+vim.keymap.set("n", "<leader>dn", function()
+	local filename = os.date("%Y-%m-%d") .. ".md"
+	vim.cmd.edit(vim.fn.fnameescape(filename))
+end, { desc = "Open today's daily note" })
+
 -- MiniFiles
 local minifiles_toggle = function()
 	if not MiniFiles.close() then
