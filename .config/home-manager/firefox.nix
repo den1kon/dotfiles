@@ -1,20 +1,22 @@
+let
+  # Relative to the home directory. Home Manager creates it below, while
+  # Firefox's ${home} policy variable expands to the native macOS home path.
+  downloadDirectory = "firefoxDownloads";
+in
 {
+  # Firefox does not reliably create a nonstandard download directory itself.
+  # Managing one harmless marker file makes Home Manager create the directory.
+  home.file."${downloadDirectory}/.keep".text = "";
+
   textfox = {
     enable = true;
-    # Replace with the names of profiles, defined in home-manager, or find existing ones in `about:profiles`
-    profiles = [
-      "denikon"
-      "work"
-      "edu"
-      "personal"
-    ];
-    config = {
-      tabs = {
-        horizontal.enable = false;
-        # vertical.enable = true;
-        # vertical.sidebery.enable = false;
-        # vertical.sidebery.margin = "1.0rem";
-      };
+    profiles = [ "denikon" ];
+
+    config.tabs = {
+      horizontal.enable = false;
+      # vertical.enable = true;
+      # vertical.sidebery.enable = false;
+      # vertical.sidebery.margin = "1.0rem";
     };
   };
 
@@ -22,83 +24,93 @@
     enable = true;
     languagePacks = [ "en-US" ];
 
-    profiles = {
-      denikon = {
-        isDefault = true;
-        id = 0;
-        settings = {
-          "browser.startup.homepage" = "";
-          "shyfox.enable.ext.mono.toolbar.icons" = true;
-          "shyfox.enable.ext.mono.context.icons" = true;
-          "shyfox.enable.context.menu.icons" = true;
-          # Remove sponsored stuff
-          "browser.newtabpage.activity-stream.showSponsored" = false;
-          "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
-          "browser.newtabpage.activity-stream.system.showSponsored" = false;
-          "services.sync.prefs.sync.browser.newtabpage.activity-stream.showSponsored" = false;
-          "services.sync.prefs.sync.browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
-          # Peskyfox
-          "extensions.getAddons.showPane" = false; # disable about:addons' Recommendations pane (uses Google Analytics)
-          "extensions.htmlaboutaddons.recommendations.enabled" = false; # disable recommendations in about:addons' Extensions and Themes panes
-          "browser.discovery.enabled" = false; # Personalized Extension Recommendations in about:addons and AMO
-          "browser.shell.checkDefaultBrowser" = false; # disable Firefox from asking to set as the default browser
-          "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" = false; # disable Extension Recommendations (CFR: "Contextual Feature Recommender")
-          "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" = false; # disable Extension Recommendations (CFR: "Contextual Feature Recommender")
-          "browser.preferences.moreFromMozilla" = false; # hide "More from Mozilla" in Settings
-          "browser.aboutConfig.showWarning" = false; # tab and about:config warnings
-          "browser.startup.homepage_override.mstone" = "ignore"; # disable welcome notices
-          "browser.aboutwelcome.enabled" = false; # disable Intro screens
-          "browser.urlbar.scotchBonnet.enableOverride" = false; # disable search engine switcher in the URL bar [FF136+]
+    profiles.denikon = {
+      id = 0;
+      isDefault = true;
 
-          # New Profile Switcher is fundamentally broken atm
-          "browser.profiles.enabled" = false; # new profile switcher
+      bookmarks = import ./firefox-bookmarks.nix;
 
-          "browser.toolbars.bookmarks.visibility" = "always"; # bookmars visiblity
-        };
+      settings = {
+        # Keep the newer multi-profile UI hidden when using one profile.
+        "browser.profiles.enabled" = false;
 
-        containersForce = true;
-        containers = {
-          "Vaultwarden" = {
-            icon = "fingerprint";
-            color = "blue";
-            id = 100;
-          };
-          "GitHub" = {
-            icon = "chill";
-            color = "purple";
-            id = 101;
-          };
-          "Gmail" = {
-            icon = "circle";
-            color = "red";
-            id = 102;
-          };
-        };
+        # Textfox / ShyFox integration.
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+        "shyfox.enable.ext.mono.toolbar.icons" = true;
+        "shyfox.enable.ext.mono.context.icons" = true;
+        "shyfox.enable.context.menu.icons" = true;
+
+        # Remove sponsored content and recommendations.
+        "browser.newtabpage.activity-stream.showSponsored" = false;
+        "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+        "browser.newtabpage.activity-stream.system.showSponsored" = false;
+        "services.sync.prefs.sync.browser.newtabpage.activity-stream.showSponsored" = false;
+        "services.sync.prefs.sync.browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+        "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" = false;
+        "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" = false;
+        "extensions.getAddons.showPane" = false;
+        "extensions.htmlaboutaddons.recommendations.enabled" = false;
+        "browser.discovery.enabled" = false;
+
+        # Remove first-run and update interruptions.
+        "browser.shell.checkDefaultBrowser" = false;
+        "browser.preferences.moreFromMozilla" = false;
+        "browser.aboutConfig.showWarning" = false;
+        "browser.startup.homepage_override.mstone" = "ignore";
+        "browser.aboutwelcome.enabled" = false;
+        "browser.urlbar.scotchBonnet.enableOverride" = false;
+
+        "browser.toolbars.bookmarks.visibility" = "always";
       };
 
-      personal = {
-        id = 1;
-        settings = {
+      containersForce = true;
+      containers = {
+        Work = {
+          icon = "briefcase";
+          color = "blue";
+          id = 99;
+        };
+
+        THV = {
+          icon = "pet";
+          color = "blue";
+          id = 100;
+        };
+
+        Personal = {
+          icon = "chill";
+          color = "green";
+          id = 101;
+        };
+
+        "Do Not Disturb" = {
+          icon = "fingerprint";
+          color = "purple";
+          id = 102;
         };
       };
-
-      work = {
-        id = 2;
-        settings = {
-        };
-      };
-
-      edu = {
-        id = 3;
-        settings = {
-        };
-      };
-
     };
 
     policies = {
-      DefaultDownloadDirectory = "\${home}/firefoxDownloads";
-      AppAutoUpdate = false;
+      # Force downloads into ~/firefoxDownloads. Unlike
+      # DefaultDownloadDirectory, this policy also sets useDownloadDir.
+      DownloadDirectory = "\${home}/${downloadDirectory}";
+      PromptForDownloadLocation = false;
+
+      # Firefox is updated through Nix/Home Manager.
+      DisableAppUpdate = true;
+
+      # Always start with a blank page and make new tabs blank as well.
+      Homepage = {
+        URL = "about:blank";
+        StartPage = "none";
+        Locked = true;
+        NewTabOnRestore = false;
+      };
+      NewTabPage = false;
+      OverrideFirstRunPage = "";
+      OverridePostUpdatePage = "";
+
       SearchEngines = {
         Default = "DuckDuckGo";
         Remove = [
@@ -107,97 +119,88 @@
           "Bing"
         ];
       };
-      OfferToSaveLogins = false; # Control whether or not Firefox offers to save passwords.
-      # Disable or configure PDF.js, the built-in PDF viewer.
+
+      # Bitwarden is used instead of Firefox's password manager.
+      OfferToSaveLogins = false;
+      PasswordManagerEnabled = false;
+
       DisableBuiltinPDFViewer = false;
       PDFjs = {
         Enabled = true;
-        EnablePermissions = false; # if set to true, the built-in PDF viewer will honor document permissions like preventing the copying of text.
-      };
-      FirefoxSuggest = {
-        WebSuggestions = false;
+        EnablePermissions = false;
       };
 
-      # ----Performance----
-      DisableFeedbackCommands = true; # Disable the menus for reporting sites.
-      DisableFirefoxAccounts = true; # Disable Firefox Accounts integration (Sync).
-      DisableFirefoxScreenshots = true; # Remove access to Firefox Screenshots.
-      DisablePocket = true; # Remove Pocket in the Firefox UI.
-      DisableSetDesktopBackground = true; # Remove the “Set As Desktop Background…” menuitem when right clicking on an image.
-      DontCheckDefaultBrowser = true; # Don’t check if Firefox is the default browser at startup.
-      # Configure generative AI features.
-      GenerativeAI = {
-        Enabled = false;
-      };
-      HardwareAcceleration = true; # Control hardware acceleration.
-      PasswordManagerEnabled = false; # Remove (some) access to the password manager.
-      PrintingEnabled = false; # Enable or disable printing.
+      FirefoxSuggest.WebSuggestions = false;
 
-      # ----Privacy----
-      DisableFirefoxStudies = true; # Disable Firefox studies (Shield).
-      DisableFormHistory = true; # Turn off saving information on web forms and the search bar.
+      DisableFeedbackCommands = true;
+      DisableFirefoxAccounts = true;
+      DisableFirefoxScreenshots = true;
+      DisablePocket = true;
+      DisableSetDesktopBackground = true;
+      DontCheckDefaultBrowser = true;
+
+      GenerativeAI.Enabled = false;
+      HardwareAcceleration = true;
+      PrintingEnabled = false;
+
+      DisableFirefoxStudies = true;
+      DisableFormHistory = true;
       DisableTelemetry = true;
 
       ExtensionSettings = {
-        "*".installation_mode = "blocked"; # blocks all addons except the ones specified below
+        # Block extensions other than those explicitly declared below.
+        "*".installation_mode = "blocked";
+
         # uBlock Origin
         "uBlock0@raymondhill.net" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
           installation_mode = "force_installed";
           default_area = "navbar";
         };
-        # "keepassxc-browser@keepassxc.org" = {
-        #   install_url = "https://addons.mozilla.org/firefox/downloads/latest/keepassxc-browser/latest.xpi";
-        #   installation_mode = "force_installed";
-        #   default_area = "navbar";
-        # };
-        # "addon@darkreader.org" = {
-        #   install_url = "https://addons.mozilla.org/firefox/downloads/file/4665768/latest.xpi";
-        #   installation_mode = "force_installed";
-        #   default_area = "navbar";
-        # };
-        # "clipper@obsidian.md" = {
-        #   install_url = "https://addons.mozilla.org/firefox/downloads/file/4707389/latest.xpi";
-        #   installation_mode = "force_installed";
-        #   default_area = "navbar";
-        # };
+
         # Bitwarden
         "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/file/4698131/latest.xpi";
           installation_mode = "force_installed";
           default_area = "navbar";
         };
+
         # Firefox Multi-Account Containers
         "@testpilot-containers" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/file/4627302/latest.xpi";
           installation_mode = "force_installed";
           default_area = "navbar";
         };
+
         # Sidebery
         "{3c078156-979c-498b-8990-85f7987dd929}" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/file/4688454/latest.xpi";
           installation_mode = "force_installed";
           default_area = "navbar";
         };
+
         # Firefox Color
         "FirefoxColor@mozilla.com" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/file/3643624/latest.xpi";
           installation_mode = "force_installed";
           default_area = "navbar";
         };
+
         # Unhook for YouTube
         "myallychou@gmail.com" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/file/4263531/latest.xpi";
           installation_mode = "force_installed";
           default_area = "navbar";
         };
+
         # Proton VPN
         "vpn@proton.ch" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/file/4773777/latest.xpi";
           installation_mode = "force_installed";
           default_area = "navbar";
         };
-        # Vimium C by Dahan Gong
+
+        # Vimium C
         "vimium-c@gdh1995.cn" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/file/4474326/latest.xpi";
           installation_mode = "force_installed";
