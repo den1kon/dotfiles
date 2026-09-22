@@ -6,6 +6,25 @@ vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow l
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
 vim.api.nvim_set_keymap("n", "<leader>gb", ":FollowBack<CR>", { desc = "Go back (Follow Back)" })
 
+local open_jira_link_from_header = function()
+	local line = vim.trim(vim.api.nvim_get_current_line())
+	local issue = line:match("^#%s+(FFMTHV%-%d+)%s*$")
+
+	if not issue then
+		vim.notify("Current line is not a Jira header (expected: # FFMTHV-1234)", vim.log.levels.WARN)
+		return
+	end
+
+	local url = "https://c24-sach.atlassian.net/browse/" .. issue
+	vim.system({ "open", url }, { detach = true })
+end
+
+-- Open the Jira issue named by a Markdown header under the cursor.
+-- For example: `# FFMTHV-1234`.
+vim.api.nvim_create_user_command("OpenInJira", open_jira_link_from_header, {
+	desc = "Open the Jira issue from the Markdown header under the cursor",
+})
+
 -- Open 'YYYY-MM-DD.md' buffer (Daily note)
 vim.keymap.set("n", "<leader>dn", function()
 	local filename = os.date("%Y-%m-%d") .. ".md"
