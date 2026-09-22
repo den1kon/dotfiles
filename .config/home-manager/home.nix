@@ -96,6 +96,8 @@ in
         spotify
         vagrant
 
+        obsidian
+
         jetbrains.phpstorm
         code-cursor
         orbstack
