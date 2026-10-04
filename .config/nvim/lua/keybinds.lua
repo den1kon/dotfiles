@@ -25,11 +25,7 @@ vim.api.nvim_create_user_command("OpenInJira", open_jira_link_from_header, {
 	desc = "Open the Jira issue from the Markdown header under the cursor",
 })
 
--- Open 'YYYY-MM-DD.md' buffer (Daily note)
-vim.keymap.set("n", "<leader>dn", function()
-	local filename = os.date("%Y-%m-%d") .. ".md"
-	vim.cmd.edit(vim.fn.fnameescape(filename))
-end, { desc = "Open today's daily note" })
+require("notes").setup()
 
 -- MiniFiles
 local minifiles_toggle = function()
