@@ -35,8 +35,6 @@ function M.build_template(options)
 	vim.list_extend(lines, {
 		"## TODOs",
 		"",
-		"## Waiting for",
-		"",
 		"## Daily notes",
 		"",
 	})

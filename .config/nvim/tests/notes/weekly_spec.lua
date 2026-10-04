@@ -24,8 +24,6 @@ local expected_with_previous = {
 	"",
 	"## TODOs",
 	"",
-	"## Waiting for",
-	"",
 	"## Daily notes",
 	"",
 }
@@ -47,8 +45,6 @@ local expected_without_previous = {
 	"# 2026-W40",
 	"",
 	"## TODOs",
-	"",
-	"## Waiting for",
 	"",
 	"## Daily notes",
 	"",
