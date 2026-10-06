@@ -91,6 +91,8 @@ in
   ++ (
     if isMacbook then
       [
+        linear
+        codex
         maccy
         claude-code
         spotify
