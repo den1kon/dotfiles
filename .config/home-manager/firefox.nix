@@ -206,6 +206,13 @@ in
           installation_mode = "force_installed";
           default_area = "navbar";
         };
+
+        # QrCode generator
+        "jid1-ZSMfwe4lCAw9oQ@jetpack" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/file/4058188/latest.xpi";
+          installation_mode = "force_installed";
+          default_area = "navbar";
+        };
       };
     };
   };
