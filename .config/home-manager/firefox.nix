@@ -88,6 +88,12 @@ in
           color = "purple";
           id = 102;
         };
+
+        Study = {
+          icon = "circle";
+          color = "blue";
+          id = 103;
+        };
       };
     };
 
