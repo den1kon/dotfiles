@@ -33,6 +33,12 @@
           user.email = "dkondratiuk@pm.me";
         };
       }
+      {
+        condition = "gitdir:~/gitLair/klarbeleg/";
+        contents = {
+          user.email = "dkondratiuk@pm.me";
+        };
+      }
     ];
   };
 }
