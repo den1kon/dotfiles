@@ -22,7 +22,9 @@
 
     includes = [
       {
-        condition = "gitdir:~/.dotfiles/";
+        # No trailing slash: a bare repository's gitdir is the directory itself,
+        # while "dir/" only matches paths below it (such as dir/.git).
+        condition = "gitdir:~/.dotfiles";
         contents = {
           user.email = "dkondratiuk@pm.me";
         };
