@@ -91,6 +91,7 @@ in
   ++ (
     if isMacbook then
       [
+        pnpm
         linear
         codex
         maccy
