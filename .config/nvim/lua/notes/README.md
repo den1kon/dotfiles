@@ -18,12 +18,11 @@ the current window rather than creating a split or tab.
 
 - `init.lua` registers user commands and keymaps. It contains no template or
   buffer logic.
-- `daily.lua` determines the daily filename, finds the previous daily note,
-  and assembles the daily-specific body.
-- `weekly.lua` determines the ISO week filename, finds the previous weekly
-  note, and assembles the weekly-specific body.
-- `frontmatter.lua` builds the shared YAML frontmatter. A note type supplies
-  only its tag; IDs and UTC timestamps are generated consistently.
+- `daily.lua` determines the daily filename and provides the
+  `{{last_daily_note}}` variable for `templates/daily.md`.
+- `weekly.lua` determines the ISO week filename and provides the
+  `{{last_weekly_note}}` variable for `templates/weekly.md`.
+- `templates/` holds the bundled note bodies, including their YAML frontmatter.
 - `config.lua` stores the options given to `setup()`.
 - `template.lua` finds a template file by note type and renders its
   `{{name}}` placeholders.
@@ -49,7 +48,8 @@ For a daily note, the flow is:
 4. If the buffer contains anything, processing stops. Existing notes are never
    changed or given another template.
 5. For an empty buffer, the lazy template callback finds the newest earlier
-   matching daily note and calls `daily.build_template()`.
+   matching daily note through the `last_daily_note` variable while
+   `daily.build_template()` renders `templates/daily.md`.
 6. The template is inserted and the cursor is placed on its final blank line.
    The buffer is modified but remains unsaved.
 
@@ -67,8 +67,10 @@ passes a filename pattern that captures its sortable period:
 Both formats sort chronologically as strings. The function selects the greatest
 matching value that is still less than the requested period. Other Markdown
 files and later notes are ignored. If no earlier matching note exists, it
-returns `nil`, and the template omits the “Last daily note” or “Last weekly
-note” line.
+returns `nil`; the `last_daily_note`/`last_weekly_note` variable then inserts
+nothing, so that line of the template stays empty. When a note exists, the
+variable inserts `- [[YYYY-MM-DD.md|Last daily note]]` (or the weekly
+equivalent).
 
 ## Template syntax
 
@@ -148,9 +150,11 @@ commands, extension instructions, and troubleshooting.
 Add a focused module beside `daily.lua` and `weekly.lua` that defines:
 
 1. Its sortable filename and matching pattern.
-2. Its body template and frontmatter tag.
-3. An `open()` function that delegates buffer handling to `note.open()`.
+2. Its template file in `templates/`, including frontmatter and tag.
+3. Any note-type variables, such as a link to its previous note.
+4. An `open()` function that delegates buffer handling to `note.open()` and
+   builds its lines with `template.build()`.
 
-Register its command and keymap in `init.lua`. Reuse `frontmatter.build()` and
-`note.find_previous()` rather than copying them. Add tests for its template,
-its first-note case, and its registered entry points.
+Register its command and keymap in `init.lua`. Reuse `note.find_previous()`
+rather than copying it. Add tests for its rendered template, its first-note
+case, and its registered entry points.

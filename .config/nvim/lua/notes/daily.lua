@@ -1,31 +1,31 @@
-local frontmatter = require("notes.frontmatter")
 local note = require("notes.note")
+local template = require("notes.template")
 
--- Daily-note naming and body structure live here; generic buffer safety and
--- frontmatter generation stay in their shared modules.
+-- Daily-note naming and variables live here; the body is templates/daily.md and
+-- generic buffer safety stays in note.lua.
 local M = {}
 local daily_pattern = "^(%d%d%d%d%-%d%d%-%d%d)%.md$"
 
 ---@class DailyTemplateOptions
 ---@field date string YYYY-MM-DD
----@field previous_note? string
+---@field directory string
 ---@field now? integer Unix timestamp
 
 ---@param options DailyTemplateOptions
 ---@return string[]
 function M.build_template(options)
-	local lines = frontmatter.build({ tag = "daily-note", now = options.now })
-	vim.list_extend(lines, { "# " .. options.date, "" })
+	local context = {
+		title = options.date,
+		directory = options.directory,
+		now = options.now or os.time(),
+	}
 
-	if options.previous_note then
-		vim.list_extend(lines, {
-			"- [[" .. options.previous_note .. "|Last daily note]]",
-			"",
-		})
-	end
-
-	vim.list_extend(lines, { "## TODOs", "" })
-	return lines
+	return template.build("daily", context, {
+		last_daily_note = function()
+			local previous = note.find_previous(context.directory, context.title, daily_pattern)
+			return previous and ("- [[" .. previous .. "|Last daily note]]") or nil
+		end,
+	})
 end
 
 ---@class DailyOpenOptions
@@ -46,11 +46,7 @@ function M.open(options)
 		directory = directory,
 		filename = date .. ".md",
 		build = function()
-			return M.build_template({
-				date = date,
-				previous_note = note.find_previous(directory, date, daily_pattern),
-				now = now,
-			})
+			return M.build_template({ date = date, directory = directory, now = now })
 		end,
 	})
 end

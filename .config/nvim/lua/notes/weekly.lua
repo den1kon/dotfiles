@@ -1,8 +1,7 @@
-local frontmatter = require("notes.frontmatter")
 local note = require("notes.note")
+local template = require("notes.template")
 
--- Weekly-note naming and body structure mirror daily notes while remaining
--- independently changeable as the weekly workflow evolves.
+-- Weekly-note naming and variables live here; the body is templates/weekly.md.
 local M = {}
 local weekly_pattern = "^(%d%d%d%d%-W%d%d)%.md$"
 
@@ -16,29 +15,24 @@ end
 
 ---@class WeeklyTemplateOptions
 ---@field week string YYYY-Www
----@field previous_note? string
+---@field directory string
 ---@field now? integer Unix timestamp
 
 ---@param options WeeklyTemplateOptions
 ---@return string[]
 function M.build_template(options)
-	local lines = frontmatter.build({ tag = "weekly-note", now = options.now })
-	vim.list_extend(lines, { "# " .. options.week, "" })
+	local context = {
+		title = options.week,
+		directory = options.directory,
+		now = options.now or os.time(),
+	}
 
-	if options.previous_note then
-		vim.list_extend(lines, {
-			"- [[" .. options.previous_note .. "|Last weekly note]]",
-			"",
-		})
-	end
-
-	vim.list_extend(lines, {
-		"## TODOs",
-		"",
-		"## Daily notes",
-		"",
+	return template.build("weekly", context, {
+		last_weekly_note = function()
+			local previous = note.find_previous(context.directory, context.title, weekly_pattern)
+			return previous and ("- [[" .. previous .. "|Last weekly note]]") or nil
+		end,
 	})
-	return lines
 end
 
 ---@class WeeklyOpenOptions
@@ -59,11 +53,7 @@ function M.open(options)
 		directory = directory,
 		filename = week .. ".md",
 		build = function()
-			return M.build_template({
-				week = week,
-				previous_note = note.find_previous(directory, week, weekly_pattern),
-				now = now,
-			})
+			return M.build_template({ week = week, directory = directory, now = now })
 		end,
 	})
 end
