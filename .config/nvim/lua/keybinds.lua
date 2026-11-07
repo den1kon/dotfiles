@@ -25,9 +25,10 @@ vim.api.nvim_create_user_command("OpenInJira", open_jira_link_from_header, {
 	desc = "Open the Jira issue from the Markdown header under the cursor",
 })
 
-require("notes").setup({
-	templates_dir = "~/gitLair/digital-notes/templates",
+require("templater").setup({
+	directories = { "~/gitLair/digital-notes/templates" },
 })
+require("notes").setup()
 
 -- MiniFiles
 local minifiles_toggle = function()

@@ -1,4 +1,4 @@
-local template = require("notes.template")
+local templater = require("templater")
 
 -- slipnote.nvim refreshes `updated_at` in every Markdown buffer before it is
 -- saved. In a template that would replace the {{updated_at}} placeholder with a
@@ -17,7 +17,7 @@ function M.setup()
 	-- replacing it here takes effect without touching the plugin's files.
 	local update_updated_at = frontmatter.update_frontmatter_updated_at
 	frontmatter.update_frontmatter_updated_at = function(buffer)
-		if template.is_template(vim.api.nvim_buf_get_name(buffer or 0)) then
+		if templater.is_template(vim.api.nvim_buf_get_name(buffer or 0)) then
 			return
 		end
 		return update_updated_at(buffer)

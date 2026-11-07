@@ -1,5 +1,4 @@
 local note = require("notes.note")
-local template = require("notes.template")
 
 -- Daily-note naming and variables live here; the body is templates/daily.md and
 -- generic buffer safety stays in note.lua.
@@ -20,7 +19,7 @@ function M.build_template(options)
 		now = options.now or os.time(),
 	}
 
-	return template.build("daily", context, {
+	return note.build("daily", context, {
 		last_daily_note = function()
 			local previous = note.find_previous(context.directory, context.title, daily_pattern)
 			return previous and ("- [[" .. previous .. "|Last daily note]]") or nil

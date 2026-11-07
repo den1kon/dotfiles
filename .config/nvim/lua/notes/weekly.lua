@@ -1,5 +1,4 @@
 local note = require("notes.note")
-local template = require("notes.template")
 
 -- Weekly-note naming and variables live here; the body is templates/weekly.md.
 local M = {}
@@ -27,7 +26,7 @@ function M.build_template(options)
 		now = options.now or os.time(),
 	}
 
-	return template.build("weekly", context, {
+	return note.build("weekly", context, {
 		last_weekly_note = function()
 			local previous = note.find_previous(context.directory, context.title, weekly_pattern)
 			return previous and ("- [[" .. previous .. "|Last weekly note]]") or nil

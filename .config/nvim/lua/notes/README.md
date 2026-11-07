@@ -23,16 +23,11 @@ the current window rather than creating a split or tab.
 - `weekly.lua` determines the ISO week filename and provides the
   `{{last_weekly_note}}` variable for `templates/weekly.md`.
 - `templates/` holds the bundled note bodies, including their YAML frontmatter.
-- `config.lua` stores the options given to `setup()`.
 - `guard.lua` stops slipnote.nvim from rewriting `updated_at` in template files
   on save. See [Template files and saving](#template-files-and-saving).
-- `template.lua` finds a template file by note type and renders its
-  `{{name}}` placeholders.
-- `variables.lua` defines the built-in template variables (`title`, `id`,
-  `created_at`, `updated_at`, `date`). A variable is a function that is called
-  only when a template uses it. See [Template syntax](#template-syntax).
 - `note.lua` owns behavior shared by every note type: locating a previous note,
-  opening the target buffer safely, and populating only an empty buffer.
+  opening the target buffer safely, populating only an empty buffer, and
+  rendering a template through [templater](../templater/README.md).
 
 This separation keeps note-type modules easy to review while avoiding copies
 of the metadata and buffer-safety logic.
@@ -74,46 +69,26 @@ nothing, so that line of the template stays empty. When a note exists, the
 variable inserts `- [[YYYY-MM-DD.md|Last daily note]]` (or the weekly
 equivalent).
 
-## Template syntax
+## Templates
 
-Templates are plain text with placeholders; they never run code.
+Note bodies are rendered by the [templater](../templater/README.md) module; see
+its README for the `{{name}}` syntax, `{{lua:…}}` code, and predefined
+variables. Besides those, templates can use:
 
-- `{{name}}` is replaced by the result of the variable function `name`.
-- `{{name:argument}}` passes the text after the first colon to the function.
-  For example, `{{date:%A}}` inserts the weekday name using an `os.date` format.
-- Whitespace around the name is ignored: `{{ title }}`.
-- A function that returns `nil` inserts nothing; its line stays in place.
-- A name with no variable, or text that is not a valid placeholder such as
-  `{{some words}}`, is left exactly as written so typos stay visible.
-- A value may contain newlines to insert several lines.
+- `{{title}}`: the note's period, such as `2026-10-04` or `2026-W40`.
+- `{{created_at}}` and `{{updated_at}}`: UTC ISO 8601 time of creation.
+- `{{last_daily_note}}` and `{{last_weekly_note}}`: a
+  `- [[2026-W39.md|Last weekly note]]` line, or nothing for the first note.
 
-Built-in variables:
-
-| Variable                | Value                                              |
-| ----------------------- | -------------------------------------------------- |
-| `{{title}}`             | Period of the note, such as `2026-10-04`/`2026-W40` |
-| `{{id}}`                | Unix timestamp of creation                         |
-| `{{created_at}}`        | UTC ISO 8601 creation time                         |
-| `{{updated_at}}`        | Same as `created_at` for a new note                |
-| `{{date}}`/`{{date:%F}}` | Local date, optionally with an `os.date` format    |
-
-## Template files and options
-
-A note type renders the template named after it, such as `weekly.md`. The
-template is searched for in this order:
-
-1. `templates_dir/<name>.md`, when `templates_dir` is set. A relative path is
-   resolved against the working directory, like the notes themselves, and `~`
-   is expanded.
-2. The bundled `lua/notes/templates/<name>.md`.
-
-`require("notes").setup()` accepts:
+The bundled `templates/daily.md` and `templates/weekly.md` are registered with
+`templater.add_directory()` as defaults. To use your own, point templater at a
+directory; a `daily.md` or `weekly.md` there replaces the bundled one:
 
 ```lua
-require("notes").setup({
-	templates_dir = "templates",
+require("templater").setup({
+	directories = "~/notes/templates",
 	variables = {
-		-- Adds a variable, or replaces a built-in or note-type one.
+		-- Added to every template, including these notes.
 		weekday = function(context)
 			return os.date("%A", context.now)
 		end,
@@ -121,10 +96,8 @@ require("notes").setup({
 })
 ```
 
-A variable receives the render context (`title`, `directory`, `now`) and the
-optional `{{name:argument}}` text, and returns a string, a number, or `nil`.
-When several definitions share a name, the user's `variables` win over the note
-type's own variables, which win over the built-ins.
+`setup()` in this module takes no options; everything configurable about
+templates belongs to templater.
 
 ## Template files and saving
 
@@ -132,13 +105,12 @@ Template files contain placeholders such as `updated_at: "{{updated_at}}"`.
 slipnote.nvim normally replaces `updated_at` with the current time whenever a
 Markdown buffer is saved, which would overwrite that placeholder. `setup()`
 therefore wraps slipnote's `update_frontmatter_updated_at` so it does nothing
-for files inside `templates_dir` or the bundled `templates/` directory. Every
+for files inside any templater template directory. Every
 other note is refreshed as before. If slipnote.nvim is not installed, nothing
 is wrapped.
 
 The check compares real paths, so symlinks and macOS `/var` versus
-`/private/var` differences do not matter. `template.is_template(path)` exposes
-the same test.
+`/private/var` differences do not matter. The test is `templater.is_template()`.
 
 ## Buffer and persistence guarantees
 
@@ -169,7 +141,7 @@ Add a focused module beside `daily.lua` and `weekly.lua` that defines:
 2. Its template file in `templates/`, including frontmatter and tag.
 3. Any note-type variables, such as a link to its previous note.
 4. An `open()` function that delegates buffer handling to `note.open()` and
-   builds its lines with `template.build()`.
+   builds its lines with `note.build()`.
 
 Register its command and keymap in `init.lua`. Reuse `note.find_previous()`
 rather than copying it. Add tests for its rendered template, its first-note

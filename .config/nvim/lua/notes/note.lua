@@ -1,3 +1,5 @@
+local templater = require("templater")
+
 local M = {}
 
 -- New notes do not exist yet, so resolve their parent directory instead of
@@ -27,6 +29,30 @@ function M.find_previous(directory, current, pattern)
 	end
 
 	return previous and (previous .. ".md") or nil
+end
+
+---@param context TemplaterContext
+---@return string
+local function utc_timestamp(context)
+	return os.date("!%Y-%m-%dT%H:%M:%SZ", context.now)
+end
+
+-- Renders a periodic-note template. The bundled templates are registered as
+-- the lowest-priority directory, so the user's own template of the same name
+-- (see templater.setup) replaces them. Besides templater's predefined
+-- variables, templates can use {{created_at}} and {{updated_at}}.
+---@param name string Template name, such as "weekly"
+---@param context TemplaterContext
+---@param variables? table<string, TemplaterVariable> Variables specific to the note type
+---@return string[] lines
+function M.build(name, context, variables)
+	local bundled = vim.api.nvim_get_runtime_file("lua/notes/templates", false)[1]
+	if bundled then
+		templater.add_directory(bundled)
+	end
+
+	local metadata = { created_at = utc_timestamp, updated_at = utc_timestamp }
+	return templater.build(name, context, vim.tbl_extend("force", metadata, variables or {}))
 end
 
 ---@class NotesOpenOptions

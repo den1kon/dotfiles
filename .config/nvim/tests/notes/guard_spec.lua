@@ -14,7 +14,7 @@ local templates_dir = vim.fn.tempname()
 local notes_dir = vim.fn.tempname()
 vim.fn.mkdir(templates_dir, "p")
 vim.fn.mkdir(notes_dir, "p")
-require("notes.config").setup({ templates_dir = templates_dir })
+require("templater").setup({ directories = templates_dir })
 
 guard.setup()
 guard.setup()

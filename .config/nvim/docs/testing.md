@@ -183,18 +183,13 @@ Tests live in one directory per module under `tests/`.
 
 Note tests:
 
-- `template_spec.lua` checks `{{name}}` rendering (built-in variables, optional
-  arguments, lazy evaluation, unmapped placeholders left untouched) and template
-  lookup: `templates_dir` precedence, the bundled fallback, variable
-  precedence between built-ins, note types, and user options, and which paths
-  count as template files.
 - `guard_spec.lua` checks that the `updated_at` refresh is skipped for template
   files, still runs for other notes, and is wrapped only once. It uses a
   stand-in for slipnote.nvim.
 - `note_spec.lua` checks previous-note lookup, buffer reuse, unsaved state, and
   overwrite protection.
 - `daily_spec.lua` checks the rendered bundled daily template, including the
-  frontmatter, with and without a previous daily note.
+  frontmatter and metadata variables, with and without a previous daily note.
 - `weekly_spec.lua` checks ISO week calculation and the rendered bundled weekly
   template, including the frontmatter, with and without a previous weekly note.
 - `init_spec.lua` checks command and keymap registration, then executes both

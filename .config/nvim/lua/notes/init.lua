@@ -1,4 +1,3 @@
-local config = require("notes.config")
 local daily = require("notes.daily")
 local guard = require("notes.guard")
 local weekly = require("notes.weekly")
@@ -7,9 +6,7 @@ local M = {}
 
 -- Commands accept an explicit period for navigation or testing; mappings use
 -- the current day or ISO week through the modules' defaults.
----@param options? NotesConfig
-function M.setup(options)
-	config.setup(options)
+function M.setup()
 	guard.setup()
 
 	vim.api.nvim_create_user_command("DailyNote", function(arguments)
