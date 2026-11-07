@@ -6,10 +6,10 @@ local links = require("markdown-navigation.links")
 local M = {}
 
 ---@class MarkdownNavigationOptions
----@field wikilink_search? MarkdownLinkSearch Where a flat [[wikilink]] is looked for, default { down = 1, up = 1 }
+---@field wikilinks? { nested_search?: MarkdownLinkSearch } How far a flat [[wikilink]] is searched for, default { up = 1, down = 1 }
 
----@type { wikilink_search: MarkdownLinkSearch }
-local settings = { wikilink_search = vim.deepcopy(links.default_search) }
+---@type { wikilinks: { nested_search: MarkdownLinkSearch } }
+local settings = { wikilinks = { nested_search = vim.deepcopy(links.default_search) } }
 
 ---@param message string
 local function warn(message)
@@ -29,7 +29,7 @@ function M.follow_link(options)
 		return false
 	end
 
-	local path, resolve_err = links.resolve(link, vim.api.nvim_buf_get_name(0), settings.wikilink_search)
+	local path, resolve_err = links.resolve(link, vim.api.nvim_buf_get_name(0), settings.wikilinks.nested_search)
 	if not path then
 		warn(resolve_err or "Could not resolve the link.")
 		return false
@@ -87,11 +87,12 @@ end
 
 ---@param user_options? MarkdownNavigationOptions
 function M.setup(user_options)
-	settings = vim.tbl_deep_extend("force", { wikilink_search = links.default_search }, user_options or {})
-	for _, levels in pairs(settings.wikilink_search) do
+	settings =
+		vim.tbl_deep_extend("force", { wikilinks = { nested_search = links.default_search } }, user_options or {})
+	for _, levels in pairs(settings.wikilinks.nested_search) do
 		assert(
 			type(levels) == "number" and levels >= 0 and levels % 1 == 0,
-			"wikilink_search levels must be non-negative integers"
+			"wikilinks.nested_search levels must be non-negative integers"
 		)
 	end
 

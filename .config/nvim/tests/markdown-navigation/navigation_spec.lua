@@ -74,13 +74,13 @@ vim.cmd("FollowLink")
 assert(current_file() == created, "two levels down is not searched by default, so the link opens a new note here")
 assert(vim.fn.filereadable(created) == 0, "following a link must not create the file")
 
-navigation.setup({ wikilink_search = { down = 2 } })
+navigation.setup({ wikilinks = { nested_search = { down = 2 } } })
 open("index.md")
 place_cursor(1, 11)
 vim.cmd("FollowLink")
 assert(current_file() == path("sub/deep/bottom.md"), "the search depth should be configurable")
 
-local invalid = pcall(navigation.setup, { wikilink_search = { down = -1 } })
+local invalid = pcall(navigation.setup, { wikilinks = { nested_search = { down = -1 } } })
 assert(not invalid, "negative search levels should be rejected")
 navigation.setup()
 

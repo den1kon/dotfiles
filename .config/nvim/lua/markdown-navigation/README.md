@@ -47,7 +47,9 @@ way to start a new note.
 
 ```lua
 require("markdown-navigation").setup({
-	wikilink_search = { down = 2, up = 1 }, -- default { down = 1, up = 1 }
+	wikilinks = {
+		nested_search = { up = 1, down = 1 }, -- the defaults
+	},
 })
 ```
 
