@@ -16,6 +16,16 @@ vim.api.nvim_set_keymap("n", "<leader>gb", ":FollowBack<CR>", { desc = "Go back 
 vim.api.nvim_set_keymap("n", "<leader>dn", ":DailyNote<CR>", { desc = "Open today's daily note" })
 vim.api.nvim_set_keymap("n", "<leader>wn", ":WeeklyNote<CR>", { desc = "Open this week's weekly note" })
 
+-- Toggle Markdown emphasis on the Visual selection (see lua/visual_wrap/)
+local function wrap_selection(marker)
+	return function()
+		require("visual_wrap").wrap(marker)
+	end
+end
+vim.keymap.set("x", "<leader>b", wrap_selection("**"), { desc = "Toggle bold on selection" })
+vim.keymap.set("x", "<leader>i", wrap_selection("*"), { desc = "Toggle italic on selection" })
+vim.keymap.set("x", "<leader>c", wrap_selection("`"), { desc = "Toggle code on selection" })
+
 local open_jira_link_from_header = function()
 	local line = vim.trim(vim.api.nvim_get_current_line())
 	local issue = line:match("^#%s+(FFMTHV%-%d+)%s*$")

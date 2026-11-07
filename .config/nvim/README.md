@@ -27,6 +27,9 @@ does it well. Modules do not know about each other; `init.lua` and
 
 Files under `plugin/` are runtime plugin configuration loaded by Neovim. The
 `ftplugin/` directory contains settings that apply only to matching filetypes.
+Overrides under `after/ftplugin/` run after the built-in filetype plugins.
+Markdown uses `after/ftplugin/markdown.lua` to set two-space indentation and
+insert spaces for Tab, overriding Neovim's built-in four-space Markdown style.
 
 ## Current structure
 
@@ -43,9 +46,11 @@ Files under `plugin/` are runtime plugin configuration loaded by Neovim. The
 │   ├── templater/           {{}} templates, Lua support, :InsertTemplate
 │   ├── frontmatter/         Refresh updated_at on save
 │   ├── markdown-navigation/ Follow links, go back
+│   ├── visual_wrap/         Toggle bold, italic and code on a selection
 │   └── ...                  Focused editor-feature modules
 ├── plugin/                  Runtime setup for installed plugins
 ├── ftplugin/                Filetype-local configuration
+├── after/ftplugin/          Overrides for built-in filetype settings
 ├── tests/                   Headless tests, one directory per module
 └── docs/                    Longer operational documentation
 ```
@@ -81,6 +86,10 @@ formatting function used by the keymap layer.
 delegated to focused modules rather than implemented entirely in a mapping.
 For example, daily and weekly note mappings run commands that
 `lua/digital_notes/` creates.
+
+In Visual mode, `<leader>b`, `<leader>i` and `<leader>c` toggle bold, italic and
+inline code on the selection through [`visual_wrap`](lua/visual_wrap/README.md),
+which provides the function while `keybinds.lua` binds the keys.
 
 ## Notes workflow
 

@@ -80,10 +80,12 @@ stylua --check \
   "$nvim_config/lua/frontmatter" \
   "$nvim_config/lua/markdown-navigation" \
   "$nvim_config/lua/digital_notes" \
+  "$nvim_config/lua/visual_wrap" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
   "$nvim_config/tests/markdown-navigation" \
   "$nvim_config/tests/digital_notes" \
+  "$nvim_config/tests/visual_wrap" \
   "$nvim_config/lua/keybinds.lua"
 ```
 
@@ -102,6 +104,7 @@ NVIM_LOG_FILE="$nvim_test_log" \
 nvim --headless -i NONE \
   '+lua for _, command in ipairs({ "DailyNote", "WeeklyNote", "InsertTemplate", "PickTemplate", "FollowLink", "FollowLinkInNewTab", "FollowBack" }) do assert(vim.fn.exists(":" .. command) == 2, command .. " command missing") end' \
   '+lua for _, key in ipairs({ "<leader>dn", "<leader>wn", "<leader>if", "<leader>it", "<leader>pt", "<leader>fl", "<leader>ft", "<leader>gb" }) do assert(vim.fn.maparg(key, "n") ~= "", key .. " keymap missing") end' \
+  '+lua for _, key in ipairs({ "<leader>b", "<leader>i", "<leader>c" }) do assert(vim.fn.maparg(key, "x") ~= "", key .. " visual keymap missing") end' \
   +qa
 ```
 
@@ -123,10 +126,12 @@ stylua --check \
   "$nvim_config/lua/frontmatter" \
   "$nvim_config/lua/markdown-navigation" \
   "$nvim_config/lua/digital_notes" \
+  "$nvim_config/lua/visual_wrap" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
   "$nvim_config/tests/markdown-navigation" \
   "$nvim_config/tests/digital_notes" \
+  "$nvim_config/tests/visual_wrap" \
   "$nvim_config/lua/keybinds.lua"
 
 for test_file in "$nvim_config"/tests/*/*_spec.lua; do
@@ -140,6 +145,7 @@ NVIM_LOG_FILE="$nvim_test_log" \
 nvim --headless -i NONE \
   '+lua for _, command in ipairs({ "DailyNote", "WeeklyNote", "InsertTemplate", "PickTemplate", "FollowLink", "FollowLinkInNewTab", "FollowBack" }) do assert(vim.fn.exists(":" .. command) == 2, command .. " command missing") end' \
   '+lua for _, key in ipairs({ "<leader>dn", "<leader>wn", "<leader>if", "<leader>it", "<leader>pt", "<leader>fl", "<leader>ft", "<leader>gb" }) do assert(vim.fn.maparg(key, "n") ~= "", key .. " keymap missing") end' \
+  '+lua for _, key in ipairs({ "<leader>b", "<leader>i", "<leader>c" }) do assert(vim.fn.maparg(key, "x") ~= "", key .. " visual keymap missing") end' \
   +qa
 ```
 
@@ -205,6 +211,13 @@ Tests live in one directory per module under `tests/`.
   link kinds, flat wikilinks found in nearby directories, a new tab, going back
   with Neovim's own buffers (toggling, skipping deleted and non-Markdown ones),
   and the warnings for failures.
+- `visual_wrap/wrap_spec.lua` drives the Visual-mode toggles in disposable unnamed
+  buffers. It covers all three markers, multiline and linewise selections,
+  backward and exclusive selections, Unicode, block selections with short lines and
+  partial tabs, register preservation, and single-step undo. Toggle cases check
+  removal of markers both inside and immediately outside the selection,
+  independent toggles on mixed block rows, and preservation of bold markers when
+  toggling italic.
 - `digital_notes/digital_notes_spec.lua` checks the wiring: every command exists,
   the configured directory supplies the frontmatter template, and saving a
   template keeps its `{{updated_at}}` placeholder while a normal note is refreshed.
