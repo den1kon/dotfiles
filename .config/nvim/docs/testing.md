@@ -75,8 +75,10 @@ nvim_config="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 stylua --check \
   "$nvim_config/lua/notes" \
   "$nvim_config/lua/templater" \
+  "$nvim_config/lua/frontmatter" \
   "$nvim_config/tests/notes" \
   "$nvim_config/tests/templater" \
+  "$nvim_config/tests/frontmatter" \
   "$nvim_config/lua/keybinds.lua"
 ```
 
@@ -115,8 +117,10 @@ nvim_test_log="${TMPDIR:-/tmp}/nvim-notes-test.log"
 stylua --check \
   "$nvim_config/lua/notes" \
   "$nvim_config/lua/templater" \
+  "$nvim_config/lua/frontmatter" \
   "$nvim_config/tests/notes" \
   "$nvim_config/tests/templater" \
+  "$nvim_config/tests/frontmatter" \
   "$nvim_config/lua/keybinds.lua"
 
 for test_file in "$nvim_config"/tests/*/*_spec.lua; do
@@ -180,6 +184,10 @@ Tests live in one directory per module under `tests/`.
   `{{lua:…}}` code, and keeping a placeholder when it is unmapped or fails.
 - `templater/directories_spec.lua` checks template lookup across user and default
   directories, and which paths count as template files.
+- `frontmatter/frontmatter_spec.lua` checks the generated block, insertion and its
+  refusal when frontmatter exists, refreshing only `updated_at` inside the block,
+  the skipped cases (other filetypes, no or unterminated frontmatter), `exclude`,
+  `update_on_save`, and the real save hook through `:write`.
 
 Note tests:
 
