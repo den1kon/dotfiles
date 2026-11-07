@@ -50,11 +50,6 @@
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim",
       "version": "'main'"
     },
-    "slipnote.nvim": {
-      "rev": "eb89ae10af5ee764cc4144e8cf0d16173953a23c",
-      "src": "https://github.com/den1kon/slipnote.nvim",
-      "version": "'main'"
-    },
     "telescope.nvim": {
       "rev": "3333a52ff548ba0a68af6d8da1e54f9cd96e9179",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
