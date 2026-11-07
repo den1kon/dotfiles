@@ -76,7 +76,11 @@ assert(
 local path_ok, path_error = pcall(templater.find, user_dir .. "/missing")
 assert(not path_ok and path_error:find("no template file", 1, true), "a missing path should be reported")
 
+vim.uv.fs_symlink(user_dir .. "/plain", user_dir .. "/linked-file")
+vim.uv.fs_symlink(user_dir .. "/nested", user_dir .. "/linked-directory")
 local listed = templater.list()
+assert(vim.tbl_contains(listed, "linked-file"), "a symlink to a file should be listed")
+assert(not vim.tbl_contains(listed, "linked-directory"), "a symlink to a directory should not be listed")
 assert(
 	vim.tbl_contains(listed, "frontmatter.yaml") and vim.tbl_contains(listed, "plain"),
 	"list should show file names as they are"

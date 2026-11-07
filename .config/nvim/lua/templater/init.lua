@@ -107,7 +107,10 @@ function M.list()
 	local names, seen = {}, {}
 	for _, directory in ipairs(search_directories()) do
 		for name, kind in vim.fs.dir(directory) do
-			if kind == "file" and not seen[name] then
+			-- A symlink counts when it points to a readable file.
+			local is_file = kind == "file"
+				or (kind == "link" and vim.fn.filereadable(vim.fs.joinpath(directory, name)) == 1)
+			if is_file and not seen[name] then
 				seen[name] = true
 				table.insert(names, name)
 			end

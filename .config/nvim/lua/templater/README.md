@@ -137,8 +137,8 @@ match wins, so list the directory whose templates should take precedence first.
 templater ships no templates of its own.
 
 `find(name)` returns the path or raises an error naming the missing template.
-`list()` returns the file names found in all directories, which is what
-completion offers.
+`list()` returns the names of the files in all directories, including symlinks to
+files, which is what completion and `:PickTemplate` offer.
 
 `is_template(path)` reports whether a path is inside any of those directories.
 Other tools use it to leave template files alone, for example to skip refreshing
