@@ -24,6 +24,10 @@ the current window rather than creating a split or tab.
   note, and assembles the weekly-specific body.
 - `frontmatter.lua` builds the shared YAML frontmatter. A note type supplies
   only its tag; IDs and UTC timestamps are generated consistently.
+- `template.lua` renders `{{name}}` placeholders in template text.
+- `variables.lua` defines the built-in template variables (`title`, `id`,
+  `created_at`, `updated_at`, `date`). A variable is a function that is called
+  only when a template uses it. See [Template syntax](#template-syntax).
 - `note.lua` owns behavior shared by every note type: locating a previous note,
   opening the target buffer safely, and populating only an empty buffer.
 
@@ -63,6 +67,29 @@ matching value that is still less than the requested period. Other Markdown
 files and later notes are ignored. If no earlier matching note exists, it
 returns `nil`, and the template omits the “Last daily note” or “Last weekly
 note” line.
+
+## Template syntax
+
+Templates are plain text with placeholders; they never run code.
+
+- `{{name}}` is replaced by the result of the variable function `name`.
+- `{{name:argument}}` passes the text after the first colon to the function.
+  For example, `{{date:%A}}` inserts the weekday name using an `os.date` format.
+- Whitespace around the name is ignored: `{{ title }}`.
+- A function that returns `nil` inserts nothing; its line stays in place.
+- A name with no variable, or text that is not a valid placeholder such as
+  `{{some words}}`, is left exactly as written so typos stay visible.
+- A value may contain newlines to insert several lines.
+
+Built-in variables:
+
+| Variable                | Value                                              |
+| ----------------------- | -------------------------------------------------- |
+| `{{title}}`             | Period of the note, such as `2026-10-04`/`2026-W40` |
+| `{{id}}`                | Unix timestamp of creation                         |
+| `{{created_at}}`        | UTC ISO 8601 creation time                         |
+| `{{updated_at}}`        | Same as `created_at` for a new note                |
+| `{{date}}`/`{{date:%F}}` | Local date, optionally with an `os.date` format    |
 
 ## Buffer and persistence guarantees
 

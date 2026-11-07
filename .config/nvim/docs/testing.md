@@ -170,6 +170,8 @@ is checked by confirming that an unsaved generated note does not exist on disk.
 ## Test-file responsibilities
 
 - `frontmatter_spec.lua` checks reusable YAML metadata and UTC timestamps.
+- `template_spec.lua` checks `{{name}}` rendering: built-in variables, optional
+  arguments, lazy evaluation, and leaving unmapped placeholders untouched.
 - `note_spec.lua` checks previous-note lookup, buffer reuse, unsaved state, and
   overwrite protection.
 - `daily_spec.lua` checks daily template content with and without a previous
