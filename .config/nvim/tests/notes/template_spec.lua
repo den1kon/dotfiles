@@ -124,6 +124,17 @@ assert(
 	"note-type variables should override built-ins"
 )
 
+config.setup({ templates_dir = custom_dir })
+assert(template.is_template(custom_dir .. "/weekly.md"), "files in templates_dir are templates")
+assert(template.is_template(custom_dir .. "/new-file.md"), "a template that does not exist yet is still a template")
+vim.fn.mkdir(custom_dir .. "/nested", "p")
+assert(template.is_template(custom_dir .. "/nested/daily.md"), "subdirectories of templates_dir are templates")
+assert(template.is_template(runtime_dir .. "/lua/notes/templates/sample.md"), "bundled templates are templates")
+assert(not template.is_template(vim.fn.tempname() .. ".md"), "other files are not templates")
+assert(not template.is_template(custom_dir .. "-notes/2026-W40.md"), "directories sharing a prefix are not templates")
+config.setup()
+assert(not template.is_template(custom_dir .. "/weekly.md"), "templates_dir should only count once it is configured")
+
 config.setup()
 vim.fn.delete(runtime_dir, "rf")
 vim.fn.delete(custom_dir, "rf")

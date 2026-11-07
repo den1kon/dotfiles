@@ -48,6 +48,34 @@ function M.find(name)
 	return bundled
 end
 
+---@param path string
+---@return string
+local function real_path(path)
+	return vim.uv.fs_realpath(path) or vim.fs.normalize(path)
+end
+
+-- Template files hold placeholders instead of real values, so tools that
+-- rewrite note metadata on save must leave them alone.
+---@param path string
+---@return boolean
+function M.is_template(path)
+	local absolute = vim.fn.fnamemodify(path, ":p")
+	-- The file may not exist yet, so resolve its directory rather than itself.
+	local file_directory = real_path(vim.fs.dirname(absolute)) .. "/"
+
+	local directories = vim.api.nvim_get_runtime_file("lua/notes/templates", true)
+	if config.templates_dir then
+		table.insert(directories, vim.fn.expand(config.templates_dir))
+	end
+
+	for _, directory in ipairs(directories) do
+		if vim.startswith(file_directory, real_path(directory) .. "/") then
+			return true
+		end
+	end
+	return false
+end
+
 ---@param name string Note type, such as "weekly"
 ---@param context NotesContext
 ---@param note_variables? table<string, NotesVariable> Variables specific to this note type

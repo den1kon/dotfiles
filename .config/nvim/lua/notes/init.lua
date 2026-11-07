@@ -1,5 +1,6 @@
 local config = require("notes.config")
 local daily = require("notes.daily")
+local guard = require("notes.guard")
 local weekly = require("notes.weekly")
 
 local M = {}
@@ -9,6 +10,7 @@ local M = {}
 ---@param options? NotesConfig
 function M.setup(options)
 	config.setup(options)
+	guard.setup()
 
 	vim.api.nvim_create_user_command("DailyNote", function(arguments)
 		daily.open({ date = arguments.args ~= "" and arguments.args or nil })

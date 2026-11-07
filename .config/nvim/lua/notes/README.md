@@ -24,6 +24,8 @@ the current window rather than creating a split or tab.
   `{{last_weekly_note}}` variable for `templates/weekly.md`.
 - `templates/` holds the bundled note bodies, including their YAML frontmatter.
 - `config.lua` stores the options given to `setup()`.
+- `guard.lua` stops slipnote.nvim from rewriting `updated_at` in template files
+  on save. See [Template files and saving](#template-files-and-saving).
 - `template.lua` finds a template file by note type and renders its
   `{{name}}` placeholders.
 - `variables.lua` defines the built-in template variables (`title`, `id`,
@@ -123,6 +125,20 @@ A variable receives the render context (`title`, `directory`, `now`) and the
 optional `{{name:argument}}` text, and returns a string, a number, or `nil`.
 When several definitions share a name, the user's `variables` win over the note
 type's own variables, which win over the built-ins.
+
+## Template files and saving
+
+Template files contain placeholders such as `updated_at: "{{updated_at}}"`.
+slipnote.nvim normally replaces `updated_at` with the current time whenever a
+Markdown buffer is saved, which would overwrite that placeholder. `setup()`
+therefore wraps slipnote's `update_frontmatter_updated_at` so it does nothing
+for files inside `templates_dir` or the bundled `templates/` directory. Every
+other note is refreshed as before. If slipnote.nvim is not installed, nothing
+is wrapped.
+
+The check compares real paths, so symlinks and macOS `/var` versus
+`/private/var` differences do not matter. `template.is_template(path)` exposes
+the same test.
 
 ## Buffer and persistence guarantees
 
