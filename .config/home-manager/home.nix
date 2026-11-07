@@ -10,7 +10,7 @@
 with pkgs;
 
 let
-  php = php82.buildEnv {
+  php = php83.buildEnv {
     extensions = (
       { enabled, all }:
       enabled
@@ -70,7 +70,7 @@ in
     nixfmt
     prettierd
     jq
-    php82Packages.php-cs-fixer
+    php83Packages.php-cs-fixer
     phpactor
     tinymist
     typstyle
@@ -105,7 +105,7 @@ in
         code-cursor
         orbstack
         php
-        (php82Packages.composer.override { inherit php; })
+        (php83Packages.composer.override { inherit php; })
         anki-bin
 
         # spotify-player
