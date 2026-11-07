@@ -54,7 +54,7 @@ set -e
 nvim_config="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 nvim_test_log="${TMPDIR:-/tmp}/nvim-notes-test.log"
 
-for test_file in "$nvim_config"/tests/notes/*_spec.lua; do
+for test_file in "$nvim_config"/tests/*/*_spec.lua; do
   NVIM_LOG_FILE="$nvim_test_log" \
   nvim --headless -u NONE -i NONE \
     --cmd "set runtimepath+=$nvim_config" \
@@ -74,7 +74,9 @@ nvim_config="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 
 stylua --check \
   "$nvim_config/lua/notes" \
+  "$nvim_config/lua/templater" \
   "$nvim_config/tests/notes" \
+  "$nvim_config/tests/templater" \
   "$nvim_config/lua/keybinds.lua"
 ```
 
@@ -112,10 +114,12 @@ nvim_test_log="${TMPDIR:-/tmp}/nvim-notes-test.log"
 
 stylua --check \
   "$nvim_config/lua/notes" \
+  "$nvim_config/lua/templater" \
   "$nvim_config/tests/notes" \
+  "$nvim_config/tests/templater" \
   "$nvim_config/lua/keybinds.lua"
 
-for test_file in "$nvim_config"/tests/notes/*_spec.lua; do
+for test_file in "$nvim_config"/tests/*/*_spec.lua; do
   NVIM_LOG_FILE="$nvim_test_log" \
   nvim --headless -u NONE -i NONE \
     --cmd "set runtimepath+=$nvim_config" \
@@ -168,6 +172,16 @@ is checked by opening a real buffer containing existing text, while persistence
 is checked by confirming that an unsaved generated note does not exist on disk.
 
 ## Test-file responsibilities
+
+Tests live in one directory per module under `tests/`.
+
+- `templater/render_spec.lua` checks `{{name}}` rendering: predefined variables,
+  arguments, caller and user variables and their precedence, lazy evaluation,
+  `{{lua:…}}` code, and keeping a placeholder when it is unmapped or fails.
+- `templater/directories_spec.lua` checks template lookup across user and default
+  directories, and which paths count as template files.
+
+Note tests:
 
 - `template_spec.lua` checks `{{name}}` rendering (built-in variables, optional
   arguments, lazy evaluation, unmapped placeholders left untouched) and template
