@@ -94,6 +94,12 @@ in
           color = "blue";
           id = 103;
         };
+
+        Development = {
+          icon = "circle";
+          color = "green";
+          id = 104;
+        };
       };
     };
 
