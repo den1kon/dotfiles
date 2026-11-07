@@ -10,6 +10,23 @@
   when a small native implementation is sufficient.
 - Do not modify installed plugin source under Neovim's data directory.
 
+## Unix philosophy
+
+Everything should try its best to follow the Unix philosophy: one module does
+one thing and does it well.
+
+- A module has one responsibility that can be described without the word
+  "and". If it needs "and", split it.
+- Modules should not know about each other. A module that needs behavior from
+  another one takes it as an option, such as a callback, instead of requiring
+  that module.
+- Composition happens in configuration, not in modules. `init.lua` and
+  `lua/digital_notes.lua` combine the modules and decide how they work together.
+- Prefer plain text and plain data (files, lines, strings, simple tables) as the
+  interface between modules.
+- Prefer a small new module over a second job or another option on an existing
+  one, and keep each module's options limited to what it does.
+
 ## Readability
 
 - Optimize code for human readability and straightforward review.

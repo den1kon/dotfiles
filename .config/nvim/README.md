@@ -4,6 +4,13 @@ This is a personal Neovim configuration used on macOS and Linux. This README
 describes its current organization and startup flow; it does not require the
 layout to remain unchanged as the configuration evolves.
 
+## Design philosophy
+
+Everything tries to follow the Unix philosophy: one module does one thing and
+does it well. Modules do not know about each other; `init.lua` and
+[`lua/digital_notes.lua`](lua/digital_notes.lua) combine them. The rules are in
+[`AGENTS.md`](AGENTS.md).
+
 ## Startup flow
 
 [`init.lua`](init.lua) is the main entry point. At startup it currently:
