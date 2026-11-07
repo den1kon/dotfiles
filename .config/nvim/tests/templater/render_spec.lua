@@ -35,7 +35,7 @@ assert(render("a{{no}}b", {
 	no = function()
 		return false
 	end,
-}) == "a{{no}}b", "a false value should keep the placeholder")
+}) == "afalseb", "false is a value, not a missing one")
 assert(render("a{{empty}}b", {
 	empty = function()
 		return ""
@@ -45,7 +45,7 @@ assert(render("a{{zero}}b", {
 	zero = function()
 		return 0
 	end,
-}) == "a0b", "a falsy-looking number is still a value")
+}) == "a0b", "a number that looks falsy is still a value")
 assert(render("{{lines}}", {
 	lines = function()
 		return "one\ntwo"
@@ -115,7 +115,7 @@ assert(render("{{lua:context.title .. '!'}}") == "My title!", "lua should see th
 assert(render("{{lua:1 + 2}}") == "3", "lua may return numbers")
 assert(render("{{lua:local n = 4; return n * 2}}") == "8", "lua may be a statement chunk")
 assert(render("{{lua:nil}}") == "{{lua:nil}}", "lua returning nil should keep the placeholder")
-assert(render("{{lua:false}}") == "{{lua:false}}", "lua returning false should keep the placeholder")
+assert(render("{{lua:1 == 2}}") == "false", "lua returning false should insert false")
 assert(render("[{{lua:''}}]") == "[]", "lua returning an empty string should insert nothing")
 templater.setup({ variables = { lua = false } })
 assert(render("{{lua:1 + 2}}") == "{{lua:1 + 2}}", "lua can be disabled")

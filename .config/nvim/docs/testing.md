@@ -186,7 +186,7 @@ Tests live in one directory per module under `tests/`.
 - `templater/render_spec.lua` checks `{{name}}` rendering: predefined variables,
   arguments, caller and user variables and their precedence, lazy evaluation,
   context fields as variables, `{{lua:…}}` code, and keeping a placeholder when it
-  is unmapped, fails, or its variable returns nil or false (but not an empty string).
+  is unmapped, fails, or its variable returns nil (while "" and false are values).
 - `templater/directories_spec.lua` checks template lookup across several
   directories (first match wins), any file extension, paths, listing, and which paths count as
   template files.
