@@ -76,9 +76,11 @@ stylua --check \
   "$nvim_config/lua/notes" \
   "$nvim_config/lua/templater" \
   "$nvim_config/lua/frontmatter" \
+  "$nvim_config/lua/markdown-navigation" \
   "$nvim_config/tests/notes" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
+  "$nvim_config/tests/markdown-navigation" \
   "$nvim_config/lua/keybinds.lua"
 ```
 
@@ -118,9 +120,11 @@ stylua --check \
   "$nvim_config/lua/notes" \
   "$nvim_config/lua/templater" \
   "$nvim_config/lua/frontmatter" \
+  "$nvim_config/lua/markdown-navigation" \
   "$nvim_config/tests/notes" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
+  "$nvim_config/tests/markdown-navigation" \
   "$nvim_config/lua/keybinds.lua"
 
 for test_file in "$nvim_config"/tests/*/*_spec.lua; do
@@ -188,6 +192,11 @@ Tests live in one directory per module under `tests/`.
   refusal when frontmatter exists, refreshing only `updated_at` inside the block,
   the skipped cases (other filetypes, no or unterminated frontmatter), `exclude`,
   `update_on_save`, and the real save hook through `:write`.
+- `markdown-navigation/links_spec.lua` checks link finding, picking the link at a
+  column, and path resolution including every refusal.
+- `markdown-navigation/navigation_spec.lua` follows links in real buffers: both
+  link kinds, a new tab, going back through history, deleted buffers, and the
+  warnings for failures.
 
 Note tests:
 
