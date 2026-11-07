@@ -1,7 +1,6 @@
 -- Follow Markdown links and wikilinks under the cursor, and go back. It
 -- registers three commands and no keymaps; callers bind keys to the commands
 -- or to the functions below.
-local history = require("markdown-navigation.history")
 local links = require("markdown-navigation.links")
 
 local M = {}
@@ -44,12 +43,41 @@ function M.follow_link(options)
 	return true
 end
 
----Returns to the Markdown buffer this window visited before the current one.
+---The Markdown buffer to return to: this window's alternate buffer (the one
+---`<C-^>` would switch to) if it qualifies, otherwise the most recently used
+---listed Markdown buffer. Neovim keeps both, so there is nothing to track here.
+---@return integer|nil buffer
+local function previous_buffer()
+	local current = vim.api.nvim_get_current_buf()
+	local function usable(buffer)
+		return buffer > 0
+			and buffer ~= current
+			and vim.api.nvim_buf_is_valid(buffer)
+			and vim.bo[buffer].buflisted
+			and vim.bo[buffer].filetype == "markdown"
+	end
+
+	local alternate = vim.fn.bufnr("#")
+	if usable(alternate) then
+		return alternate
+	end
+
+	local newest
+	for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
+		if usable(info.bufnr) and (not newest or info.lastused > newest.lastused) then
+			newest = info
+		end
+	end
+	return newest and newest.bufnr
+end
+
+---Switches to the previous Markdown buffer. Repeating it toggles between the
+---two most recent ones, like `<C-^>`.
 ---@return boolean moved
 function M.follow_back()
-	local previous = history.pop_previous()
+	local previous = previous_buffer()
 	if not previous then
-		warn("Buffer history is empty")
+		warn("No previous Markdown buffer")
 		return false
 	end
 
@@ -75,18 +103,7 @@ function M.setup(user_options)
 	end, { desc = "Follow link at cursor in new tab" })
 	vim.api.nvim_create_user_command("FollowBack", function()
 		M.follow_back()
-	end, { desc = "Go back to the previous Markdown buffer" })
-
-	local group = vim.api.nvim_create_augroup("MarkdownNavigationHistory", { clear = true })
-	vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
-		group = group,
-		desc = "Record visited Markdown buffers",
-		callback = function()
-			if vim.bo.filetype == "markdown" then
-				history.push(vim.api.nvim_get_current_buf())
-			end
-		end,
-	})
+	end, { desc = "Go to the previous Markdown buffer" })
 end
 
 return M

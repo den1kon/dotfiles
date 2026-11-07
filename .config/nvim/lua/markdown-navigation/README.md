@@ -53,18 +53,24 @@ require("markdown-navigation").setup({
 
 Levels are non-negative integers; `0` turns that direction off.
 
-## History
+## Going back
 
-`:FollowBack` uses a stack kept per window. Entering a Markdown buffer in a
-window pushes it; going back drops the current buffer and returns the latest
-earlier one that is still listed, so deleted buffers are skipped.
+`:FollowBack` keeps no history of its own; it uses what Neovim already tracks.
+It switches to the window's alternate buffer (what `<C-^>` would switch to) when
+that is a listed Markdown buffer, and otherwise to the most recently used listed
+Markdown buffer. Deleted and non-Markdown buffers are skipped, and with nothing
+to return to it shows a warning.
+
+Repeating it toggles between the two most recent buffers, as `<C-^>` does. To
+walk further back through every place you jumped from, use Neovim's jump list
+(`<C-o>` and `<C-i>`): opening a link records the position you left.
 
 ## Files
 
-- `init.lua`: `setup()`, the commands, and the two actions.
+- `init.lua`: `setup()`, the commands, the two actions, and choosing the buffer to
+  go back to.
 - `links.lua`: pure functions that find links in a line, pick the one at a
   column, and resolve a link to a path.
-- `history.lua`: the per-window buffer stack.
 
 Tests are in `tests/markdown-navigation/`; see
 [the testing guide](../../docs/testing.md).

@@ -50,7 +50,7 @@ assert(current_file() == path("a.md"), "a wikilink with an alias should open its
 vim.cmd("FollowBack")
 assert(current_file() == path("b.md"), "back should return to the previous buffer")
 vim.cmd("FollowBack")
-assert(current_file() == path("a.md"), "back should keep going through the history")
+assert(current_file() == path("a.md"), "repeating back should toggle between the two buffers")
 
 place_cursor(1, 13)
 vim.cmd("FollowLink")
@@ -121,13 +121,7 @@ expect_warning("forbidden characters", function()
 	vim.cmd("FollowLink")
 end)
 
-vim.cmd("enew!")
-vim.w.markdown_navigation_history = nil
-expect_warning("Buffer history is empty", function()
-	vim.cmd("FollowBack")
-end)
-
--- History skips buffers that no longer exist: a -> b -> a -> c, then b is deleted.
+-- Back relies on Neovim's own buffers: a deleted buffer is skipped.
 vim.cmd("silent! only")
 open("a.md")
 place_cursor(1, 1)
@@ -144,7 +138,24 @@ vim.cmd("bdelete " .. b_buffer)
 vim.cmd("FollowBack")
 assert(current_file() == path("a.md"), "back from c should land on a")
 vim.cmd("FollowBack")
-assert(current_file() == path("a.md"), "back should skip the deleted buffer instead of failing")
+assert(current_file() == path("c.md"), "back again should return to c, never to the deleted b")
+
+-- A non-Markdown alternate buffer is skipped in favour of the latest Markdown one.
+vim.cmd("%bwipeout!")
+vim.fn.writefile({ "text" }, directory .. "/x.txt")
+vim.fn.writefile({ "text" }, directory .. "/y.txt")
+open("a.md")
+open("x.txt")
+open("y.txt")
+vim.cmd("FollowBack")
+assert(current_file() == path("a.md"), "back should skip non-Markdown buffers")
+
+-- With nothing to return to, back warns and stays put.
+vim.cmd("%bwipeout!")
+open("c.md")
+expect_warning("No previous Markdown buffer", function()
+	vim.cmd("FollowBack")
+end)
 
 vim.cmd("enew!")
 vim.fn.delete(directory, "rf")
