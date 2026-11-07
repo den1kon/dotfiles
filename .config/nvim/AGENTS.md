@@ -84,7 +84,7 @@ one thing and does it well.
   `git add .` against the home-directory work tree.
 - Inspect the staged diff before committing.
 - Follow the existing commit-message convention, such as
-  `[neovim] describe the change`.
+  `[nvim] describe the change`.
 - Never run an unscoped destructive Git command against the home-directory
   work tree.
 

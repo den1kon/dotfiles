@@ -5,8 +5,11 @@ structured. Commands use absolute paths so they work from any directory.
 
 ## Goals and guarantees
 
-The note tests verify observable Neovim behavior:
+The tests verify observable Neovim behavior:
 
+- Templates render, insert, and are found in the configured directories.
+- Frontmatter `updated_at` is refreshed on save, except in template files.
+- Links are followed, including flat wikilinks found in nearby directories.
 - Daily and weekly notes are filled from their templates.
 - A missing previous note leaves the link placeholder visible, never a broken link.
 - Existing note content is never overwritten.
@@ -44,7 +47,7 @@ nvim --headless -u NONE -i NONE \
 
 Replace `render_spec.lua` with another file under `tests/<module>/` when needed.
 
-## Run all note tests
+## Run all tests
 
 `set -e` is important: it stops the shell at the first failed test instead of
 allowing a later successful test to hide the failure.
@@ -89,17 +92,16 @@ To apply formatting intentionally, run the same command without `--check`.
 ## Run the full-config smoke test
 
 The isolated tests prove individual behavior. This smoke test loads the normal
-configuration and confirms that its public note commands and keymaps exist:
+configuration and confirms that its public note commands and keymaps exist (the
+list is in the command below):
 
 ```sh
 nvim_test_log="${TMPDIR:-/tmp}/nvim-notes-test.log"
 
 NVIM_LOG_FILE="$nvim_test_log" \
 nvim --headless -i NONE \
-  '+lua assert(vim.fn.exists(":DailyNote") == 2, "DailyNote command missing")' \
-  '+lua assert(vim.fn.exists(":WeeklyNote") == 2, "WeeklyNote command missing")' \
-  '+lua assert(vim.fn.maparg("<leader>dn", "n") ~= "", "daily-note keymap missing")' \
-  '+lua assert(vim.fn.maparg("<leader>wn", "n") ~= "", "weekly-note keymap missing")' \
+  '+lua for _, command in ipairs({ "DailyNote", "WeeklyNote", "InsertTemplate", "PickTemplate", "FollowLink", "FollowLinkInNewTab", "FollowBack" }) do assert(vim.fn.exists(":" .. command) == 2, command .. " command missing") end' \
+  '+lua for _, key in ipairs({ "<leader>dn", "<leader>wn", "<leader>if", "<leader>it", "<leader>pt", "<leader>fl", "<leader>ft", "<leader>gb" }) do assert(vim.fn.maparg(key, "n") ~= "", key .. " keymap missing") end' \
   +qa
 ```
 
@@ -108,8 +110,8 @@ This command deliberately omits `-u NONE`, allowing Neovim to load the real
 
 ## Run the complete verification
 
-The following sequence is the complete check used after changes to note
-automation:
+The following sequence is the complete check used after changes to the
+modules it covers:
 
 ```sh
 set -e
@@ -136,10 +138,8 @@ done
 
 NVIM_LOG_FILE="$nvim_test_log" \
 nvim --headless -i NONE \
-  '+lua assert(vim.fn.exists(":DailyNote") == 2, "DailyNote command missing")' \
-  '+lua assert(vim.fn.exists(":WeeklyNote") == 2, "WeeklyNote command missing")' \
-  '+lua assert(vim.fn.maparg("<leader>dn", "n") ~= "", "daily-note keymap missing")' \
-  '+lua assert(vim.fn.maparg("<leader>wn", "n") ~= "", "weekly-note keymap missing")' \
+  '+lua for _, command in ipairs({ "DailyNote", "WeeklyNote", "InsertTemplate", "PickTemplate", "FollowLink", "FollowLinkInNewTab", "FollowBack" }) do assert(vim.fn.exists(":" .. command) == 2, command .. " command missing") end' \
+  '+lua for _, key in ipairs({ "<leader>dn", "<leader>wn", "<leader>if", "<leader>it", "<leader>pt", "<leader>fl", "<leader>ft", "<leader>gb" }) do assert(vim.fn.maparg(key, "n") ~= "", key .. " keymap missing") end' \
   +qa
 ```
 
@@ -188,8 +188,8 @@ Tests live in one directory per module under `tests/`.
   context fields as variables, `{{lua:…}}` code, and keeping a placeholder when it
   is unmapped, fails, or its variable returns nil (while "" and false are values).
 - `templater/directories_spec.lua` checks template lookup across several
-  directories (first match wins), any file extension, paths, listing, and which paths count as
-  template files.
+  directories (first match wins), any file extension, paths, listing (including
+  symlinks to files), and which paths count as template files.
 - `templater/insert_spec.lua` runs `:InsertTemplate` for every position, the
   cursor afterwards, rendering with the buffer's details, error reporting,
   completion, and `:PickTemplate` (with a stubbed `vim.ui.select`): both prompts,
@@ -267,6 +267,7 @@ Neovim uses its standard state directory.
 
 ### A time-dependent assertion changes by timezone
 
-Pass a fixed Unix timestamp through the module's `now` option. Templates format
-stored timestamps in UTC, while daily dates and ISO weeks intentionally follow
-local time.
+Pass a fixed Unix timestamp as `now` in the context given to templater's
+`render()`, `build()` or `insert()`. `{{utc}}` formats it in UTC, while `{{date}}`,
+`{{time}}` and the default daily and weekly note names intentionally follow local
+time.

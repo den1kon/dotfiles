@@ -21,7 +21,9 @@ does it well. Modules do not know about each other; `init.lua` and
 4. Applies the colorscheme and custom marks.
 5. Configures and enables language servers.
 6. Sets up the extended MiniFiles behavior and keymaps.
-7. Applies Markdown-specific highlighting.
+7. Sets up the note modules through `lua/digital_notes.lua`.
+8. Registers the user commands and keymaps in `lua/keybinds.lua`.
+9. Applies Markdown-specific highlighting.
 
 Files under `plugin/` are runtime plugin configuration loaded by Neovim. The
 `ftplugin/` directory contains settings that apply only to matching filetypes.
