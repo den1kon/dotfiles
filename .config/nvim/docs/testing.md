@@ -201,10 +201,11 @@ Tests live in one directory per module under `tests/`.
   block, the skipped cases (other filetypes, no or unterminated frontmatter),
   `exclude`, `update_on_save`, and the real save hook through `:write`.
 - `markdown-navigation/links_spec.lua` checks link finding, picking the link at a
-  column, and path resolution including every refusal.
+  column, path resolution including every refusal, and the wikilink search order
+  across a temporary directory tree with configurable depths.
 - `markdown-navigation/navigation_spec.lua` follows links in real buffers: both
-  link kinds, a new tab, going back through history, deleted buffers, and the
-  warnings for failures.
+  link kinds, flat wikilinks found in nearby directories, a new tab, going back
+  through history, deleted buffers, and the warnings for failures.
 - `digital_notes/digital_notes_spec.lua` checks the wiring: every command exists,
   the bundled frontmatter template inserts at the start of a buffer, the template
   directory is configured, and saving a template keeps its `{{updated_at}}`

@@ -56,6 +56,34 @@ place_cursor(1, 13)
 vim.cmd("FollowLink")
 assert(current_file() == path("c.md"), "a markdown link should open its file")
 
+-- Flat wikilinks are found in nearby directories, and the depth is configurable.
+vim.fn.mkdir(directory .. "/sub/deep", "p")
+vim.fn.writefile({ "in sub" }, directory .. "/sub/inner.md")
+vim.fn.writefile({ "in deep" }, directory .. "/sub/deep/bottom.md")
+vim.fn.writefile({ "[[inner]] [[bottom]] [[nowhere]]" }, directory .. "/index.md")
+
+open("index.md")
+place_cursor(1, 1)
+vim.cmd("FollowLink")
+assert(current_file() == path("sub/inner.md"), "a flat wikilink should be found one level down")
+
+open("index.md")
+place_cursor(1, 11)
+local created = path("bottom.md")
+vim.cmd("FollowLink")
+assert(current_file() == created, "two levels down is not searched by default, so the link opens a new note here")
+assert(vim.fn.filereadable(created) == 0, "following a link must not create the file")
+
+navigation.setup({ wikilink_search = { down = 2 } })
+open("index.md")
+place_cursor(1, 11)
+vim.cmd("FollowLink")
+assert(current_file() == path("sub/deep/bottom.md"), "the search depth should be configurable")
+
+local invalid = pcall(navigation.setup, { wikilink_search = { down = -1 } })
+assert(not invalid, "negative search levels should be rejected")
+navigation.setup()
+
 -- A new tab.
 open("a.md")
 place_cursor(1, 1)

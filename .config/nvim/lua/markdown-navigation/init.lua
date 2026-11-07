@@ -6,6 +6,12 @@ local links = require("markdown-navigation.links")
 
 local M = {}
 
+---@class MarkdownNavigationOptions
+---@field wikilink_search? MarkdownLinkSearch Where a flat [[wikilink]] is looked for, default { down = 1, up = 1 }
+
+---@type { wikilink_search: MarkdownLinkSearch }
+local settings = { wikilink_search = vim.deepcopy(links.default_search) }
+
 ---@param message string
 local function warn(message)
 	vim.notify("markdown-navigation: " .. message, vim.log.levels.WARN)
@@ -24,7 +30,7 @@ function M.follow_link(options)
 		return false
 	end
 
-	local path, resolve_err = links.resolve(link, vim.api.nvim_buf_get_name(0))
+	local path, resolve_err = links.resolve(link, vim.api.nvim_buf_get_name(0), settings.wikilink_search)
 	if not path then
 		warn(resolve_err or "Could not resolve the link.")
 		return false
@@ -51,7 +57,16 @@ function M.follow_back()
 	return true
 end
 
-function M.setup()
+---@param user_options? MarkdownNavigationOptions
+function M.setup(user_options)
+	settings = vim.tbl_deep_extend("force", { wikilink_search = links.default_search }, user_options or {})
+	for _, levels in pairs(settings.wikilink_search) do
+		assert(
+			type(levels) == "number" and levels >= 0 and levels % 1 == 0,
+			"wikilink_search levels must be non-negative integers"
+		)
+	end
+
 	vim.api.nvim_create_user_command("FollowLink", function()
 		M.follow_link()
 	end, { desc = "Follow link at cursor" })

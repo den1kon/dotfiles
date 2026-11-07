@@ -9,6 +9,13 @@ local WIKILINK = "%[%[([^|%]]+)[^%]]*%]%]"
 local FORBIDDEN_FILENAME_CHARS = '[<>:"|?*]'
 local INVALID_FILENAME_ENDING = "[%s%.]$"
 
+---@class MarkdownLinkSearch
+---@field down integer Levels of subdirectories searched below the file's directory
+---@field up integer Levels of parent directories searched above it
+
+---@type MarkdownLinkSearch
+M.default_search = { down = 1, up = 1 }
+
 ---@alias MarkdownLinkKind "markdown"|"wikilink"
 
 ---@class MarkdownLink
@@ -65,13 +72,73 @@ function M.at_column(line, column)
 	return nil, "No link found at the cursor."
 end
 
----Turns a link into an absolute path. Relative targets are relative to the
----directory of `current_file`, and a wikilink without an extension gets `.md`.
+---@param path string
+---@return boolean
+local function is_file(path)
+	local stat = vim.uv.fs_stat(path)
+	return stat ~= nil and stat.type == "file"
+end
+
+---Visible subdirectories of `directory`, in name order.
+---@param directory string
+---@return string[]
+local function subdirectories(directory)
+	local found = {}
+	if vim.fn.isdirectory(directory) == 1 then
+		for name, kind in vim.fs.dir(directory) do
+			if kind == "directory" and not vim.startswith(name, ".") then
+				table.insert(found, vim.fs.joinpath(directory, name))
+			end
+		end
+	end
+	table.sort(found)
+	return found
+end
+
+---Where a flat wikilink may live, in the order they are tried: the file's own
+---directory, then `down` levels of subdirectories (nearest level first), then
+---`up` parent directories (nearest first). Siblings of the file's directory are
+---not searched.
+---@param directory string
+---@param search MarkdownLinkSearch
+---@return string[]
+function M.search_directories(directory, search)
+	local directories = { directory }
+
+	local level = { directory }
+	for _ = 1, search.down do
+		local deeper = {}
+		for _, parent in ipairs(level) do
+			vim.list_extend(deeper, subdirectories(parent))
+		end
+		vim.list_extend(directories, deeper)
+		level = deeper
+	end
+
+	local ancestor = directory
+	for _ = 1, search.up do
+		local parent = vim.fs.dirname(ancestor)
+		if parent == ancestor then
+			break
+		end
+		table.insert(directories, parent)
+		ancestor = parent
+	end
+	return directories
+end
+
+---Turns a link into an absolute path.
+---
+---A markdown link is relative to the directory of `current_file` or absolute.
+---A wikilink without an extension gets `.md`, and a relative one is searched
+---for in nearby directories (see search_directories); when nothing is found it
+---points to a new note next to `current_file`.
 ---@param link MarkdownLink
 ---@param current_file string Path of the file that contains the link
+---@param search? MarkdownLinkSearch Defaults to one level down and one up
 ---@return string|nil path
 ---@return string|nil err
-function M.resolve(link, current_file)
+function M.resolve(link, current_file, search)
 	local target = link.target
 	if target == nil or target == "" then
 		return nil, "Link target is empty."
@@ -92,12 +159,24 @@ function M.resolve(link, current_file)
 		target = target .. ".md"
 	end
 
-	local path = target
-	if vim.fn.fnamemodify(target, ":p") ~= target then
-		local directory = vim.fn.fnamemodify(current_file, ":p:h")
-		path = vim.fn.fnamemodify(vim.fs.joinpath(directory, target), ":p")
+	local function normalized(path)
+		return vim.fs.normalize(vim.fn.fnamemodify(path, ":p"), { expand_env = false })
 	end
-	return vim.fs.normalize(path, { expand_env = false }), nil
+
+	if vim.fn.fnamemodify(target, ":p") == target then
+		return normalized(target), nil
+	end
+
+	local directory = vim.fn.fnamemodify(current_file, ":p:h")
+	if link.kind == "wikilink" then
+		for _, candidate_directory in ipairs(M.search_directories(directory, search or M.default_search)) do
+			local candidate = normalized(vim.fs.joinpath(candidate_directory, target))
+			if is_file(candidate) then
+				return candidate, nil
+			end
+		end
+	end
+	return normalized(vim.fs.joinpath(directory, target)), nil
 end
 
 return M

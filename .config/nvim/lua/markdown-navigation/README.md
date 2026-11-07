@@ -17,14 +17,41 @@ it moved. Failures show a warning and leave the buffer unchanged.
 
 ## Links
 
-- Markdown links: `[text](path/to/file.md)`.
-- Wikilinks: `[[target]]` and `[[target|alias]]`. A target without an extension
-  gets `.md`.
+- **Markdown links**, `[text](path/to/file.md)`, are relative to the directory of
+  the file that contains them, or absolute. They are never searched for.
+- **Wikilinks**, `[[target]]` and `[[target|alias]]`, are flat: a target without
+  an extension gets `.md`, and it is looked for in nearby directories, see
+  below.
 
-A relative target is resolved against the directory of the file that contains
-the link, with `..` collapsed; an absolute target is used as is. A link is
-refused when its target is empty, has no filename, contains one of
-`<>:"|?*`, or ends with a space or a dot.
+`..` in a relative path is collapsed. A link is refused when its target is empty,
+has no filename, contains one of `<>:"|?*`, or ends with a space or a dot.
+
+### Where a wikilink is looked for
+
+For `[[reference]]` in `folder_a/folder_b/file.md`, the first existing file wins
+in this order:
+
+1. `folder_a/folder_b/` (the file's own directory)
+2. its subdirectories, `down` levels deep, nearest level first and in name order
+   within a level (hidden directories are skipped)
+3. its parent directories, `up` levels, nearest first
+
+With the defaults (`down = 1`, `up = 1`) that is `folder_b/`, then
+`folder_b/*/`, then `folder_a/`. Sibling directories such as `folder_a/folder_c/`
+are not searched. A target with a path, `[[child/note]]`, is tried the same way
+under each of those directories, and an absolute target is used as written.
+
+If nothing is found, following the link opens `reference.md` in the file's own
+directory. The file is not created until you save it, which makes a link a quick
+way to start a new note.
+
+```lua
+require("markdown-navigation").setup({
+	wikilink_search = { down = 2, up = 1 }, -- default { down = 1, up = 1 }
+})
+```
+
+Levels are non-negative integers; `0` turns that direction off.
 
 ## History
 
