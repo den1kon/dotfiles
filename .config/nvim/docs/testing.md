@@ -192,9 +192,9 @@ Tests live in one directory per module under `tests/`.
   template files.
 - `templater/insert_spec.lua` runs `:InsertTemplate` for every position, the
   cursor afterwards, rendering with the buffer's details, error reporting,
-  completion, and the chooser (with a stubbed `vim.ui.select`): both prompts,
-  names shown without extensions, cancelling, the original window, and no
-  templates.
+  completion, and `:PickTemplate` (with a stubbed `vim.ui.select`): both prompts,
+  a given position, names shown without extensions, cancelling, the original
+  window, and no templates.
 - `frontmatter/frontmatter_spec.lua` checks refreshing only `updated_at` inside the
   block, the skipped cases (other filetypes, no or unterminated frontmatter),
   `exclude`, `update_on_save`, and the real save hook through `:write`.

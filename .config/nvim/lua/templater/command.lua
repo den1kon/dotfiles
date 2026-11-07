@@ -1,5 +1,6 @@
--- The :InsertTemplate command, its completion, and the interactive form that
--- asks for the template and the position through vim.ui.select.
+-- The :InsertTemplate command, which inserts a named template, and
+-- :PickTemplate, which asks for the template (and the position) through
+-- vim.ui.select. Both complete their arguments.
 local insert = require("templater.insert")
 
 local M = {}
@@ -57,36 +58,64 @@ local function run(name, position)
 	end
 end
 
+---Completes the position, the only argument of :PickTemplate.
+---@param argument_lead string
+---@return string[]
+local function complete_position(argument_lead)
+	return vim.tbl_filter(function(position)
+		return vim.startswith(position, argument_lead)
+	end, insert.positions)
+end
+
 -- vim.ui.select is the standard interface, so whichever picker is installed
 -- (mini.pick, snacks, the built-in menu) shows the choices. The prompts are
 -- asynchronous, so the window the command started in is restored before
 -- inserting.
-local function choose_and_run()
+---@param position? string Where to insert; asked for when omitted
+local function pick(position)
+	if position and not vim.tbl_contains(insert.positions, position) then
+		vim.notify(
+			("PickTemplate: unknown position %q, expected one of: %s"):format(
+				position,
+				table.concat(insert.positions, ", ")
+			),
+			vim.log.levels.ERROR
+		)
+		return
+	end
+
 	local names = require("templater").list()
 	if #names == 0 then
-		vim.notify("InsertTemplate: no templates found", vim.log.levels.WARN)
+		vim.notify("PickTemplate: no templates found", vim.log.levels.WARN)
 		return
 	end
 
 	local window = vim.api.nvim_get_current_win()
+	local function finish(name, chosen_position)
+		if vim.api.nvim_win_is_valid(window) then
+			vim.api.nvim_set_current_win(window)
+		end
+		run(name, chosen_position)
+	end
+
 	vim.ui.select(names, { prompt = "Template", format_item = display_names(names) }, function(name)
 		if not name then
+			return
+		end
+		if position then
+			finish(name, position)
 			return
 		end
 
 		vim.ui.select(insert.positions, {
 			prompt = "Position",
-			format_item = function(position)
-				return ("%s (%s)"):format(position, insert.descriptions[position])
+			format_item = function(item)
+				return ("%s (%s)"):format(item, insert.descriptions[item])
 			end,
-		}, function(position)
-			if not position then
-				return
+		}, function(chosen_position)
+			if chosen_position then
+				finish(name, chosen_position)
 			end
-			if vim.api.nvim_win_is_valid(window) then
-				vim.api.nvim_set_current_win(window)
-			end
-			run(name, position)
 		end)
 	end)
 end
@@ -94,16 +123,22 @@ end
 function M.register()
 	vim.api.nvim_create_user_command("InsertTemplate", function(arguments)
 		if #arguments.fargs > 2 then
-			vim.notify("InsertTemplate: expected [{template} [{position}]]", vim.log.levels.ERROR)
-		elseif #arguments.fargs == 0 then
-			choose_and_run()
-		else
-			run(arguments.fargs[1], arguments.fargs[2])
+			vim.notify("InsertTemplate: expected {template} [{position}]", vim.log.levels.ERROR)
+			return
 		end
+		run(arguments.fargs[1], arguments.fargs[2])
 	end, {
-		nargs = "*",
+		nargs = "+",
 		complete = complete,
-		desc = "Insert a rendered template: [{template} [{position}]], or choose from a list",
+		desc = "Insert a rendered template: {template} [{position}]",
+	})
+
+	vim.api.nvim_create_user_command("PickTemplate", function(arguments)
+		pick(arguments.fargs[1])
+	end, {
+		nargs = "?",
+		complete = complete_position,
+		desc = "Choose a template from a list and insert it: [{position}], asked for when omitted",
 	})
 end
 

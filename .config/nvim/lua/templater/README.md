@@ -74,7 +74,7 @@ error keeps it and shows a warning.
 ## Inserting a template
 
 ```vim
-:InsertTemplate [{template} [{position}]]
+:InsertTemplate {template} [{position}]
 ```
 
 `{template}` is any file; its extension does not matter, only its content.
@@ -99,14 +99,22 @@ the buffer unchanged.
 
 ### Choosing from a list
 
-`:InsertTemplate` with no arguments asks for the template and then the position
-with `vim.ui.select()`, so whichever picker you have installed (mini.pick,
-snacks, the built-in menu) shows them. Templates are listed without their
-extension (`daily`, not `daily.md`); two files that differ only by extension keep
-it. Only the display changes, never the files. The positions are listed with a
-short explanation. Cancelling either prompt inserts nothing, and the text goes to the
-window the command was started in even if the picker moved focus. With no
-templates in any directory it shows a warning instead.
+```vim
+:PickTemplate [{position}]
+```
+
+`:PickTemplate` asks for the template with `vim.ui.select()`, so whichever
+picker you have installed (mini.pick, snacks, the built-in menu) shows the list.
+Without an argument it then asks for the position too, listed with a short
+explanation; with a position, such as `:PickTemplate cursor`, it asks only for the
+template. An unknown position is refused before anything is shown.
+
+Templates are listed without their extension (`daily`, not `daily.md`); two files
+that differ only by extension keep it. Only the display changes, never the files.
+Cancelling either prompt inserts nothing, and the text goes to the window the
+command was started in even if the picker moved focus. With no templates in any
+directory it shows a warning instead. `:InsertTemplate` itself always needs a
+template argument.
 
 templater only calls the standard `vim.ui.select()`, so it needs no picker
 plugin. To add a preview or another picker, build one in your configuration from
@@ -116,7 +124,8 @@ plugin. To add a preview or another picker, build one in your configuration from
 
 ```lua
 vim.keymap.set("n", "<leader>if", "<cmd>InsertTemplate frontmatter start<CR>", { desc = "Insert frontmatter" })
-vim.keymap.set("n", "<leader>pt", "<cmd>InsertTemplate<CR>", { desc = "Pick template" })
+vim.keymap.set("n", "<leader>pt", "<cmd>PickTemplate<CR>", { desc = "Pick template and position" })
+vim.keymap.set("n", "<leader>it", "<cmd>PickTemplate cursor<CR>", { desc = "Pick template, insert at cursor" })
 ```
 
 ## Template files
@@ -140,11 +149,11 @@ Other tools use it to leave template files alone, for example to skip refreshing
 ```lua
 local templater = require("templater")
 
-templater.setup({ directories = "~/notes/templates", variables = {} }) -- also registers :InsertTemplate
+templater.setup({ directories = "~/notes/templates", variables = {} }) -- also registers :InsertTemplate and :PickTemplate
 templater.render(text, context, variables)        -- string -> string
 templater.build(name, context, variables)         -- template -> lines
 templater.insert(name, position)                  -- render and insert into the current buffer
--- :InsertTemplate with no arguments asks for both with vim.ui.select()
+-- :PickTemplate [position] asks for the template (and position) with vim.ui.select()
 templater.find(name)                              -- template -> path
 templater.list()                                  -- template file names
 templater.is_template(path)                       -- boolean
@@ -157,6 +166,6 @@ templater.is_template(path)                       -- boolean
 - `init.lua` holds the options, lookup, and rendering.
 - `variables.lua` defines the predefined variables.
 - `insert.lua` puts lines into the buffer at a position.
-- `command.lua` defines `:InsertTemplate`, its completion, and the chooser.
+- `command.lua` defines `:InsertTemplate` and `:PickTemplate` and their completion.
 
 Tests are in `tests/templater/`; see [the testing guide](../../docs/testing.md).

@@ -110,7 +110,7 @@ end
 
 local function choose(chosen_answers)
 	prompts, answers = {}, chosen_answers
-	vim.cmd("InsertTemplate")
+	vim.cmd("PickTemplate")
 end
 
 buffer({ "hello world", "second" }, { 1, 3 })
@@ -143,6 +143,44 @@ assert(#prompts == 1 and vim.deep_equal(lines(), { "keep" }), "cancelling the te
 choose({ "one-line.md" })
 assert(#prompts == 2 and vim.deep_equal(lines(), { "keep" }), "cancelling the position choice should insert nothing")
 
+-- With a position, only the template is asked for.
+buffer({ "hello world" }, { 1, 5 })
+prompts, answers = {}, { "one-line.md" }
+vim.cmd("PickTemplate cursor")
+assert(#prompts == 1 and prompts[1].options.prompt == "Template", "a given position should skip the position prompt")
+assert(vim.deep_equal(lines(), { "helloX world" }), "the template should go to the given position")
+
+buffer({ "a", "b" })
+prompts, answers = {}, { "two-lines.txt" }
+vim.cmd("PickTemplate end")
+assert(vim.deep_equal(lines(), { "a", "b", "A", "B" }), "any position can be given: " .. vim.inspect(lines()))
+
+buffer({ "keep" })
+prompts, answers = {}, {}
+vim.cmd("PickTemplate start")
+assert(#prompts == 1 and vim.deep_equal(lines(), { "keep" }), "cancelling should still insert nothing")
+
+local bad_messages = {}
+local original_notify_for_pick = vim.notify
+vim.notify = function(message, level)
+	table.insert(bad_messages, { message = message, level = level })
+end
+prompts, answers = {}, {}
+vim.cmd("PickTemplate sideways")
+vim.notify = original_notify_for_pick
+assert(#prompts == 0, "an unknown position should be refused before any prompt")
+assert(
+	#bad_messages == 1 and bad_messages[1].level == vim.log.levels.ERROR,
+	"an unknown position should be reported once"
+)
+assert(
+	bad_messages[1].message:find("sideways", 1, true) and bad_messages[1].message:find("replace", 1, true),
+	"the error should list the positions"
+)
+
+-- :InsertTemplate always needs a template; choosing is :PickTemplate's job.
+assert(not pcall(vim.cmd, "InsertTemplate"), "InsertTemplate without arguments should be refused")
+
 -- The insert goes to the window the command started in, even if the picker left another one current.
 buffer({ "origin" })
 local origin_window = vim.api.nvim_get_current_win()
@@ -152,7 +190,7 @@ vim.ui.select = function(items, options, on_choice)
 	on_choice(table.remove(answers, 1))
 end
 answers = { "one-line.md", "end" }
-vim.cmd("InsertTemplate")
+vim.cmd("PickTemplate")
 assert(vim.api.nvim_get_current_win() == origin_window, "the original window should be current again")
 assert(
 	vim.deep_equal(vim.api.nvim_buf_get_lines(origin_buffer, 0, -1, false), { "origin", "X" }),
@@ -172,7 +210,7 @@ local notify = vim.notify
 vim.notify = function(message, level)
 	table.insert(messages, { message = message, level = level })
 end
-vim.cmd("InsertTemplate")
+vim.cmd("PickTemplate")
 assert(#messages == 1 and messages[1].level == vim.log.levels.WARN, "no templates should be reported once")
 vim.notify = notify
 vim.ui.select = original_select
@@ -198,6 +236,14 @@ assert(
 	"position completion should filter by prefix"
 )
 assert(vim.deep_equal(complete("InsertTemplate frontmatter start "), {}), "nothing follows the position")
+assert(
+	vim.deep_equal(complete("PickTemplate "), require("templater.insert").positions),
+	"PickTemplate should complete positions"
+)
+assert(
+	vim.deep_equal(complete("PickTemplate a"), { "after-cursor", "above" }),
+	"PickTemplate completion should filter by prefix"
+)
 local path_matches = complete("InsertTemplate " .. directory .. "/two")
 assert(#path_matches == 1 and path_matches[1]:find("two-lines.txt", 1, true), "paths should be completed as files")
 

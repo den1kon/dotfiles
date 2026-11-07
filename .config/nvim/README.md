@@ -86,7 +86,7 @@ The note features are small independent modules that do not know about each
 other; [`lua/digital_notes.lua`](lua/digital_notes.lua) combines them.
 
 - [`templater`](lua/templater/README.md) renders `{{name}}` templates, including
-  `{{lua:…}}` code, and inserts them with `:InsertTemplate`.
+  `{{lua:…}}` code, and inserts them with `:InsertTemplate` or `:PickTemplate`.
 - [`frontmatter`](lua/frontmatter/README.md) refreshes `updated_at` on save.
 - [`markdown-navigation`](lua/markdown-navigation/README.md) follows links and
   goes back.
