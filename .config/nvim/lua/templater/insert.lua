@@ -13,6 +13,17 @@ local M = {}
 ---@type TemplaterPosition[]
 M.positions = { "cursor", "after-cursor", "above", "below", "start", "end" }
 
+---A short explanation of each position, shown when choosing one from a list.
+---@type table<TemplaterPosition, string>
+M.descriptions = {
+	["cursor"] = "inline, before the cursor character",
+	["after-cursor"] = "inline, after the cursor character",
+	["above"] = "new lines above the current line",
+	["below"] = "new lines below the current line",
+	["start"] = "beginning of the buffer",
+	["end"] = "end of the buffer",
+}
+
 ---Cursor placement: the inline and line-wise positions leave it on the first
 ---inserted character or line, like :put; `start` and `end` do not move it, so
 ---metadata can be added without losing your place.

@@ -7,6 +7,7 @@ vim.api.nvim_set_keymap(
 	":InsertTemplate frontmatter start<CR>",
 	{ desc = "Insert YAML frontmatter" }
 )
+vim.api.nvim_set_keymap("n", "<leader>it", ":InsertTemplate<CR>", { desc = "Choose a template to insert" })
 vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow link at cursor" })
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
 vim.api.nvim_set_keymap("n", "<leader>gb", ":FollowBack<CR>", { desc = "Go back (Follow Back)" })

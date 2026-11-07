@@ -86,6 +86,79 @@ assert(#errors == 3 and errors[3].message:find("expected", 1, true), "extra argu
 assert(vim.deep_equal(lines(), { "keep" }), "failed commands should not change the buffer")
 vim.notify = original_notify
 
+-- Choosing interactively: with no arguments the template and position are asked for.
+templater.setup({ directories = directory })
+local original_select = vim.ui.select
+local prompts = {}
+local answers = {}
+vim.ui.select = function(items, options, on_choice)
+	table.insert(prompts, { items = items, options = options })
+	on_choice(table.remove(answers, 1))
+end
+
+local function choose(chosen_answers)
+	prompts, answers = {}, chosen_answers
+	vim.cmd("InsertTemplate")
+end
+
+buffer({ "hello world", "second" }, { 1, 3 })
+choose({ "two-lines.txt", "below" })
+assert(#prompts == 2, "two prompts should be shown")
+assert(vim.deep_equal(prompts[1].items, templater.list()), "the first prompt should list the templates")
+assert(prompts[1].options.prompt == "Template", "the first prompt should say what it asks for")
+assert(
+	vim.deep_equal(prompts[2].items, require("templater.insert").positions),
+	"the second prompt should list the positions"
+)
+assert(prompts[2].options.format_item("below"):find("below", 1, true), "positions should be shown with their meaning")
+assert(prompts[2].options.format_item("below"):find("new lines below", 1, true), "positions should be described")
+assert(
+	vim.deep_equal(lines(), { "hello world", "A", "B", "second" }),
+	"the chosen template should go to the chosen position"
+)
+
+buffer({ "keep" })
+choose({})
+assert(#prompts == 1 and vim.deep_equal(lines(), { "keep" }), "cancelling the template choice should stop there")
+choose({ "one-line.md" })
+assert(#prompts == 2 and vim.deep_equal(lines(), { "keep" }), "cancelling the position choice should insert nothing")
+
+-- The insert goes to the window the command started in, even if the picker left another one current.
+buffer({ "origin" })
+local origin_window = vim.api.nvim_get_current_win()
+local origin_buffer = vim.api.nvim_get_current_buf()
+vim.ui.select = function(items, options, on_choice)
+	vim.cmd("new")
+	on_choice(table.remove(answers, 1))
+end
+answers = { "one-line.md", "end" }
+vim.cmd("InsertTemplate")
+assert(vim.api.nvim_get_current_win() == origin_window, "the original window should be current again")
+assert(
+	vim.deep_equal(vim.api.nvim_buf_get_lines(origin_buffer, 0, -1, false), { "origin", "X" }),
+	"the text should land in the original buffer"
+)
+vim.cmd("only")
+
+-- With no templates there is nothing to choose from.
+vim.ui.select = function()
+	error("no prompt expected")
+end
+local empty_directory = vim.fn.tempname()
+vim.fn.mkdir(empty_directory, "p")
+templater.setup({ directories = empty_directory })
+local messages = {}
+local notify = vim.notify
+vim.notify = function(message, level)
+	table.insert(messages, { message = message, level = level })
+end
+vim.cmd("InsertTemplate")
+assert(#messages == 1 and messages[1].level == vim.log.levels.WARN, "no templates should be reported once")
+vim.notify = notify
+vim.ui.select = original_select
+templater.setup({ directories = directory })
+vim.fn.delete(empty_directory, "rf")
+
 -- Completion.
 local function complete(command_line)
 	return vim.fn.getcompletion(command_line, "cmdline")

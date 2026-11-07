@@ -72,7 +72,7 @@ and shows a warning.
 ## Inserting a template
 
 ```vim
-:InsertTemplate {template} [{position}]
+:InsertTemplate [{template} [{position}]]
 ```
 
 `{template}` is any file; its extension does not matter, only its content.
@@ -91,10 +91,26 @@ arguments complete with `<Tab>`.
 
 In a new buffer with a single empty line, `start` and `end` replace that line
 instead of keeping it. A bad template name or position shows an error and leaves
-the buffer unchanged. Example binding:
+the buffer unchanged.
+
+### Choosing from a list
+
+`:InsertTemplate` with no arguments asks for the template and then the position
+with `vim.ui.select()`, so whichever picker you have installed (mini.pick,
+snacks, the built-in menu) shows them. The positions are listed with a short
+explanation. Cancelling either prompt inserts nothing, and the text goes to the
+window the command was started in even if the picker moved focus. With no
+templates in any directory it shows a warning instead.
+
+templater only calls the standard `vim.ui.select()`, so it needs no picker
+plugin. To add a preview or another picker, build one in your configuration from
+`list()`, `find()` and `insert()`.
+
+### Example bindings
 
 ```lua
 vim.keymap.set("n", "<leader>if", "<cmd>InsertTemplate frontmatter start<CR>", { desc = "Insert frontmatter" })
+vim.keymap.set("n", "<leader>it", "<cmd>InsertTemplate<CR>", { desc = "Choose a template to insert" })
 ```
 
 ## Template files
@@ -122,6 +138,7 @@ templater.setup({ directories = "~/notes/templates", variables = {} }) -- also r
 templater.render(text, context, variables)        -- string -> string
 templater.build(name, context, variables)         -- template -> lines
 templater.insert(name, position)                  -- render and insert into the current buffer
+-- :InsertTemplate with no arguments asks for both with vim.ui.select()
 templater.find(name)                              -- template -> path
 templater.list()                                  -- template file names
 templater.is_template(path)                       -- boolean
@@ -134,6 +151,6 @@ templater.is_template(path)                       -- boolean
 - `init.lua` holds the options, lookup, and rendering.
 - `variables.lua` defines the predefined variables.
 - `insert.lua` puts lines into the buffer at a position.
-- `command.lua` defines `:InsertTemplate` and its completion.
+- `command.lua` defines `:InsertTemplate`, its completion, and the chooser.
 
 Tests are in `tests/templater/`; see [the testing guide](../../docs/testing.md).

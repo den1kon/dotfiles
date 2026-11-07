@@ -1,4 +1,5 @@
--- The :InsertTemplate command and its completion.
+-- The :InsertTemplate command, its completion, and the interactive form that
+-- asks for the template and the position through vim.ui.select.
 local insert = require("templater.insert")
 
 local M = {}
@@ -29,21 +30,62 @@ local function complete(argument_lead, command_line, cursor_position)
 	end, require("templater").list())
 end
 
-function M.register()
-	vim.api.nvim_create_user_command("InsertTemplate", function(arguments)
-		if #arguments.fargs > 2 then
-			vim.notify("InsertTemplate: expected {template} [{position}]", vim.log.levels.ERROR)
+---@param name string
+---@param position? string
+local function run(name, position)
+	local ok, err = pcall(require("templater").insert, name, position)
+	if not ok then
+		vim.notify(tostring(err), vim.log.levels.ERROR)
+	end
+end
+
+-- vim.ui.select is the standard interface, so whichever picker is installed
+-- (mini.pick, snacks, the built-in menu) shows the choices. The prompts are
+-- asynchronous, so the window the command started in is restored before
+-- inserting.
+local function choose_and_run()
+	local names = require("templater").list()
+	if #names == 0 then
+		vim.notify("InsertTemplate: no templates found", vim.log.levels.WARN)
+		return
+	end
+
+	local window = vim.api.nvim_get_current_win()
+	vim.ui.select(names, { prompt = "Template" }, function(name)
+		if not name then
 			return
 		end
 
-		local ok, err = pcall(require("templater").insert, arguments.fargs[1], arguments.fargs[2])
-		if not ok then
-			vim.notify(tostring(err), vim.log.levels.ERROR)
+		vim.ui.select(insert.positions, {
+			prompt = "Position",
+			format_item = function(position)
+				return ("%s (%s)"):format(position, insert.descriptions[position])
+			end,
+		}, function(position)
+			if not position then
+				return
+			end
+			if vim.api.nvim_win_is_valid(window) then
+				vim.api.nvim_set_current_win(window)
+			end
+			run(name, position)
+		end)
+	end)
+end
+
+function M.register()
+	vim.api.nvim_create_user_command("InsertTemplate", function(arguments)
+		if #arguments.fargs > 2 then
+			vim.notify("InsertTemplate: expected [{template} [{position}]]", vim.log.levels.ERROR)
+		elseif #arguments.fargs == 0 then
+			choose_and_run()
+		else
+			run(arguments.fargs[1], arguments.fargs[2])
 		end
 	end, {
-		nargs = "+",
+		nargs = "*",
 		complete = complete,
-		desc = "Insert a rendered template: {template} [{position}]",
+		desc = "Insert a rendered template: [{template} [{position}]], or choose from a list",
 	})
 end
 
