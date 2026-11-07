@@ -1,6 +1,6 @@
 local Formatter = require("fmt")
 
--- Frontmatter and link navigation; the modules are wired in lua/digital_notes.lua
+-- Frontmatter and link navigation; the modules are wired in lua/digital_notes/
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>if",
@@ -12,7 +12,7 @@ vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow l
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
 vim.api.nvim_set_keymap("n", "<leader>gb", ":FollowBack<CR>", { desc = "Go back (Follow Back)" })
 
--- Daily and weekly notes (see lua/digital_notes.lua)
+-- Daily and weekly notes (see lua/digital_notes/)
 vim.api.nvim_set_keymap("n", "<leader>dn", ":DailyNote<CR>", { desc = "Open today's daily note" })
 vim.api.nvim_set_keymap("n", "<leader>wn", ":WeeklyNote<CR>", { desc = "Open this week's weekly note" })
 

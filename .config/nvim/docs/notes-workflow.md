@@ -4,7 +4,7 @@ The note features are independent modules that do not know about each other:
 [templater](../lua/templater/README.md),
 [frontmatter](../lua/frontmatter/README.md) and
 [markdown-navigation](../lua/markdown-navigation/README.md).
-[`lua/digital_notes.lua`](../lua/digital_notes.lua) combines them for the
+[`lua/digital_notes/`](../lua/digital_notes/README.md) combines them for the
 digital-notes vault and holds the little glue specific to it: daily and weekly
 notes. There is no notes module; a daily or weekly note is just a file named
 after the day or week, filled from a template.
@@ -86,17 +86,30 @@ The buffer is never saved by this code; saving stays your action.
 ## Previous-note links
 
 `{{last_daily_note}}` and `{{last_weekly_note}}` scan the note's directory for
-files matching `YYYY-MM-DD.md` or `YYYY-Www.md`. Periods are zero-padded, so
-string order is time order, and the greatest period below the current one wins.
-Notes of the other kind and later periods are ignored.
+files matching `YYYY-MM-DD.md` or `YYYY-Www.md` (`previous_note.lua`). Periods are
+zero-padded, so string order is time order, and the greatest period below the
+current one wins. Notes of the other kind and later periods are ignored.
 
 ## Adding another note type
 
-For a monthly note: add `monthly.md` to the templates directory, add a command
-in `register_commands()` that calls `open_note(name, "monthly")`, and, if it
-should link its predecessor, add a `previous_note_link()` variable to the
-`variables` in `setup()`. Bind a key in `lua/keybinds.lua`. If this glue grows,
-move it into a module of its own.
+The note types are a table in `lua/digital_notes/periodic_notes.lua`. For a
+monthly note, add `monthly.md` to the templates directory and one entry to
+`NOTE_TYPES`:
+
+```lua
+monthly = {
+	command = "MonthlyNote",
+	description = "Open a monthly note, filled from the monthly template when new",
+	pattern = "^(%d%d%d%d%-%d%d)%.md$",
+	label = "Last monthly note",
+	current = function()
+		return os.date("%Y-%m")
+	end,
+},
+```
+
+That registers `:MonthlyNote [YYYY-MM]` and the `{{last_monthly_note}}` variable.
+Bind a key in `lua/keybinds.lua`.
 
 ## Tests
 

@@ -8,7 +8,7 @@ layout to remain unchanged as the configuration evolves.
 
 Everything tries to follow the Unix philosophy: one module does one thing and
 does it well. Modules do not know about each other; `init.lua` and
-[`lua/digital_notes.lua`](lua/digital_notes.lua) combine them. The rules are in
+[`lua/digital_notes/`](lua/digital_notes/README.md) combine them. The rules are in
 [`AGENTS.md`](AGENTS.md).
 
 ## Startup flow
@@ -21,7 +21,7 @@ does it well. Modules do not know about each other; `init.lua` and
 4. Applies the colorscheme and custom marks.
 5. Configures and enables language servers.
 6. Sets up the extended MiniFiles behavior and keymaps.
-7. Sets up the note modules through `lua/digital_notes.lua`.
+7. Sets up the note modules through `lua/digital_notes/`.
 8. Registers the user commands and keymaps in `lua/keybinds.lua`.
 9. Applies Markdown-specific highlighting.
 
@@ -39,7 +39,7 @@ Files under `plugin/` are runtime plugin configuration loaded by Neovim. The
 │   ├── keybinds.lua         User commands and mappings
 │   ├── fmt.lua              Conform formatter setup
 │   ├── lsp/                 Language-server modules
-│   ├── digital_notes.lua    Wires the note modules; daily and weekly notes
+│   ├── digital_notes/       Wires the note modules; daily and weekly notes
 │   ├── templater/           {{}} templates, Lua support, :InsertTemplate
 │   ├── frontmatter/         Refresh updated_at on save
 │   ├── markdown-navigation/ Follow links, go back
@@ -80,12 +80,12 @@ formatting function used by the keymap layer.
 `lua/keybinds.lua` contains general commands and mappings. Larger workflows are
 delegated to focused modules rather than implemented entirely in a mapping.
 For example, daily and weekly note mappings run commands that
-`lua/digital_notes.lua` creates.
+`lua/digital_notes/` creates.
 
 ## Notes workflow
 
 The note features are small independent modules that do not know about each
-other; [`lua/digital_notes.lua`](lua/digital_notes.lua) combines them.
+other; [`lua/digital_notes/`](lua/digital_notes/README.md) combines them.
 
 - [`templater`](lua/templater/README.md) renders `{{name}}` templates, including
   `{{lua:…}}` code, and inserts them with `:InsertTemplate` or `:PickTemplate`.
@@ -95,7 +95,7 @@ other; [`lua/digital_notes.lua`](lua/digital_notes.lua) combines them.
 
 The wiring is where one module is told about another, for example
 `frontmatter` skips `templater`'s template files. Daily and weekly notes are not
-a module: [`digital_notes.lua`](lua/digital_notes.lua) opens a file named after
+a module: [`digital_notes`](lua/digital_notes/README.md) opens a file named after
 the day or week and fills it from a template. See
 [the notes workflow](docs/notes-workflow.md).
 

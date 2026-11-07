@@ -21,7 +21,7 @@ one thing and does it well.
   another one takes it as an option, such as a callback, instead of requiring
   that module.
 - Composition happens in configuration, not in modules. `init.lua` and
-  `lua/digital_notes.lua` combine the modules and decide how they work together.
+  `lua/digital_notes/` combine the modules and decide how they work together.
 - Prefer plain text and plain data (files, lines, strings, simple tables) as the
   interface between modules.
 - Prefer a small new module over a second job or another option on an existing

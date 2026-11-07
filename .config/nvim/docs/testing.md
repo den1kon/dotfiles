@@ -79,7 +79,7 @@ stylua --check \
   "$nvim_config/lua/templater" \
   "$nvim_config/lua/frontmatter" \
   "$nvim_config/lua/markdown-navigation" \
-  "$nvim_config/lua/digital_notes.lua" \
+  "$nvim_config/lua/digital_notes" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
   "$nvim_config/tests/markdown-navigation" \
@@ -122,7 +122,7 @@ stylua --check \
   "$nvim_config/lua/templater" \
   "$nvim_config/lua/frontmatter" \
   "$nvim_config/lua/markdown-navigation" \
-  "$nvim_config/lua/digital_notes.lua" \
+  "$nvim_config/lua/digital_notes" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
   "$nvim_config/tests/markdown-navigation" \
@@ -208,6 +208,9 @@ Tests live in one directory per module under `tests/`.
 - `digital_notes/digital_notes_spec.lua` checks the wiring: every command exists,
   the configured directory supplies the frontmatter template, and saving a
   template keeps its `{{updated_at}}` placeholder while a normal note is refreshed.
+- `digital_notes/previous_note_spec.lua` checks the previous-period lookup alone:
+  the newest earlier file wins, and other note types, other extensions and
+  directories are ignored.
 - `digital_notes/notes_spec.lua` runs `:DailyNote` and `:WeeklyNote` in a temporary
   directory: naming, filling from the template, previous-note links, existing and
   unsaved notes left alone, today's and this week's defaults, and a missing
