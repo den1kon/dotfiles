@@ -1,6 +1,7 @@
 -- Plain-text templates with {{name}} placeholders. The module knows nothing
 -- about notes: callers supply a context and their own variables, and users add
 -- more through setup().
+local insert = require("templater.insert")
 local variables = require("templater.variables")
 
 local M = {}
@@ -27,6 +28,7 @@ function M.setup(options)
 	local directories = options.directories or {}
 	user.directories = type(directories) == "string" and { directories } or directories
 	user.variables = options.variables or {}
+	require("templater.command").register()
 end
 
 ---Registers a default directory for templates, below the user's directories.
@@ -61,6 +63,13 @@ function M.render(text, context, extra_variables)
 		name = name or placeholder:match("^%s*([%w_]+)%s*$")
 
 		local resolver = name and resolvers[name]
+		-- A text or number field of the context is a variable too, unless the
+		-- name was explicitly disabled with `false`.
+		if resolver == nil and name and (type(context[name]) == "string" or type(context[name]) == "number") then
+			resolver = function()
+				return context[name]
+			end
+		end
 		if not resolver then
 			return nil
 		end
@@ -75,17 +84,45 @@ function M.render(text, context, extra_variables)
 	return rendered
 end
 
----@param name string Template name, resolved to `<directory>/<name>.md`
+---A template is any file; its extension does not matter. `name` is either a
+---path (it contains `/` or starts with `~`) or a name looked up as
+---`<directory>/<name>` and then `<directory>/<name>.md` in each directory.
+---@param name string
 ---@return string path
 function M.find(name)
-	local filename = name .. ".md"
-	for _, directory in ipairs(search_directories()) do
-		local path = vim.fs.joinpath(directory, filename)
+	if name:find("/", 1, true) or vim.startswith(name, "~") then
+		local path = vim.fn.fnamemodify(vim.fn.expand(name), ":p")
 		if vim.fn.filereadable(path) == 1 then
 			return path
 		end
+		error("templater: no template file " .. name, 0)
 	end
-	error("templater: no template named " .. filename)
+
+	for _, directory in ipairs(search_directories()) do
+		for _, filename in ipairs({ name, name .. ".md" }) do
+			local path = vim.fs.joinpath(directory, filename)
+			if vim.fn.filereadable(path) == 1 then
+				return path
+			end
+		end
+	end
+	error("templater: no template named " .. name, 0)
+end
+
+---File names of the templates in every directory, without duplicates.
+---@return string[]
+function M.list()
+	local names, seen = {}, {}
+	for _, directory in ipairs(search_directories()) do
+		for name, kind in vim.fs.dir(directory) do
+			if kind == "file" and not seen[name] then
+				seen[name] = true
+				table.insert(names, name)
+			end
+		end
+	end
+	table.sort(names)
+	return names
 end
 
 ---@param name string
@@ -95,6 +132,22 @@ end
 function M.build(name, context, extra_variables)
 	local text = table.concat(vim.fn.readfile(M.find(name)), "\n")
 	return vim.split(M.render(text, context, extra_variables), "\n", { plain = true })
+end
+
+---Renders a template and inserts it into the current buffer. The context holds
+---`title` (file name without extension), `filename`, `directory` and `path` of
+---the buffer, for variables to read.
+---@param name string Template path or name, see find()
+---@param position? TemplaterPosition Where to insert; defaults to "cursor"
+function M.insert(name, position)
+	local path = vim.api.nvim_buf_get_name(0)
+	local lines = M.build(name, {
+		title = vim.fn.fnamemodify(path, ":t:r"),
+		filename = vim.fn.fnamemodify(path, ":t"),
+		directory = vim.fn.fnamemodify(path, ":p:h"),
+		path = path,
+	})
+	insert.insert(lines, position or "cursor")
 end
 
 ---@param path string

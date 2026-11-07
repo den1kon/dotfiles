@@ -189,9 +189,14 @@ Tests live in one directory per module under `tests/`.
 
 - `templater/render_spec.lua` checks `{{name}}` rendering: predefined variables,
   arguments, caller and user variables and their precedence, lazy evaluation,
-  `{{lua:…}}` code, and keeping a placeholder when it is unmapped or fails.
+  context fields as variables, `{{lua:…}}` code, and keeping a placeholder when it
+  is unmapped or fails.
 - `templater/directories_spec.lua` checks template lookup across user and default
-  directories, and which paths count as template files.
+  directories, any file extension, paths, listing, and which paths count as
+  template files.
+- `templater/insert_spec.lua` runs `:InsertTemplate` for every position, the
+  cursor afterwards, rendering with the buffer's details, error reporting, and
+  completion.
 - `frontmatter/frontmatter_spec.lua` checks the generated block, insertion and its
   refusal when frontmatter exists, refreshing only `updated_at` inside the block,
   the skipped cases (other filetypes, no or unterminated frontmatter), `exclude`,

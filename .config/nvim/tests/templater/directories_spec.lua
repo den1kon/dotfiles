@@ -11,7 +11,7 @@ vim.fn.writefile({ "default {{title}}", "", "{{missing}}" }, default_dir .. "/sa
 
 local missing_ok, missing_error = pcall(templater.find, "sample")
 assert(
-	not missing_ok and missing_error:find("sample.md", 1, true),
+	not missing_ok and missing_error:find("no template named sample", 1, true),
 	"a template should not be found before directories exist"
 )
 
@@ -54,6 +54,36 @@ vim.cmd.cd(vim.fn.fnameescape(original_directory))
 
 local home_ok = pcall(templater.setup, { directories = "~/templater-directory-that-does-not-exist" })
 assert(home_ok, "a directory with ~ should be accepted even when it is missing")
+
+-- Any file is a template, found by exact name, by name plus .md, or by path.
+templater.setup({ directories = user_dir })
+vim.fn.writefile({ "yaml {{title}}" }, user_dir .. "/frontmatter.yaml")
+vim.fn.writefile({ "plain {{title}}" }, user_dir .. "/plain")
+vim.fn.writefile({ "exact {{title}}" }, user_dir .. "/both")
+vim.fn.writefile({ "md {{title}}" }, user_dir .. "/both.md")
+assert(
+	vim.deep_equal(templater.build("frontmatter.yaml", context), { "yaml T" }),
+	"a name with any extension should work"
+)
+assert(vim.deep_equal(templater.build("plain", context), { "plain T" }), "a name without extension should work")
+assert(vim.deep_equal(templater.build("both", context), { "exact T" }), "the exact file name should beat name plus .md")
+assert(
+	vim.deep_equal(templater.build(user_dir .. "/frontmatter.yaml", context), { "yaml T" }),
+	"an absolute path should work"
+)
+local path_ok, path_error = pcall(templater.find, user_dir .. "/missing")
+assert(not path_ok and path_error:find("no template file", 1, true), "a missing path should be reported")
+
+local listed = templater.list()
+assert(
+	vim.tbl_contains(listed, "frontmatter.yaml") and vim.tbl_contains(listed, "plain"),
+	"list should show file names as they are"
+)
+assert(vim.tbl_contains(listed, "sample.md"), "list should include every file in the directories")
+assert(not vim.tbl_contains(listed, "nested"), "list should not include directories")
+local sorted = vim.deepcopy(listed)
+table.sort(sorted)
+assert(vim.deep_equal(listed, sorted), "list should be sorted")
 
 -- Template detection.
 templater.setup({ directories = user_dir })

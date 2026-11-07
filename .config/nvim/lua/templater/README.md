@@ -30,6 +30,11 @@ their own variables, and users add more through `setup()`.
 Every date and time uses `context.now`, which defaults to the current time, so
 one render is internally consistent.
 
+Text and number fields of the context are variables too. `:InsertTemplate`
+supplies `{{title}}` (the buffer's file name without extension), `{{filename}}`,
+`{{directory}}` and `{{path}}`. A predefined or caller variable of the same name
+wins over a context field.
+
 ## Lua code
 
 `{{lua:os.date("%y/%m/%d %H/%M")}}` evaluates the code as an expression. If the
@@ -64,10 +69,38 @@ When names collide, `setup()` variables win over the caller's, which win over
 the predefined ones. Raising an error inside a variable keeps its placeholder
 and shows a warning.
 
+## Inserting a template
+
+```vim
+:InsertTemplate {template} [{position}]
+```
+
+`{template}` is any file; its extension does not matter, only its content.
+Give a path (`~/notes/templates/frontmatter.md`, `./x`) or a name that is looked
+up in the template directories, as `<name>` first and then `<name>.md`. Both
+arguments complete with `<Tab>`.
+
+| Position       | Where the text goes                                  | Cursor after          |
+| -------------- | ---------------------------------------------------- | --------------------- |
+| `cursor`       | Inline, before the character under the cursor (default) | First inserted character |
+| `after-cursor` | Inline, after the character under the cursor         | First inserted character |
+| `above`        | New lines above the current line                     | First inserted line   |
+| `below`        | New lines below the current line                     | First inserted line   |
+| `start`        | Beginning of the buffer                              | Stays on its text     |
+| `end`          | End of the buffer                                    | Stays on its text     |
+
+In a new buffer with a single empty line, `start` and `end` replace that line
+instead of keeping it. A bad template name or position shows an error and leaves
+the buffer unchanged. Example binding:
+
+```lua
+vim.keymap.set("n", "<leader>if", "<cmd>InsertTemplate frontmatter start<CR>", { desc = "Insert frontmatter" })
+```
+
 ## Template files
 
-`build(name, context, variables)` reads `<directory>/<name>.md`, renders it, and
-returns its lines. Directories are searched in this order:
+`build(name, context, variables)` reads a template, renders it, and returns its
+lines. Directories are searched in this order:
 
 1. The `directories` given to `setup()`, in order. `~` is expanded and a
    relative path resolves against the working directory.
@@ -75,7 +108,9 @@ returns its lines. Directories are searched in this order:
    module uses this to ship its own bundled templates; a user template of the
    same name always wins.
 
-`find(name)` returns the path or raises an error naming the missing file.
+`find(name)` returns the path or raises an error naming the missing template.
+`list()` returns the file names found in all directories, which is what
+completion offers.
 
 `is_template(path)` reports whether a path is inside any of those directories.
 Other tools use it to leave template files alone, for example to skip refreshing
@@ -86,11 +121,13 @@ Other tools use it to leave template files alone, for example to skip refreshing
 ```lua
 local templater = require("templater")
 
-templater.setup({ directories = "~/notes/templates", variables = {} })
+templater.setup({ directories = "~/notes/templates", variables = {} }) -- also registers :InsertTemplate
 templater.add_directory(path)                     -- default directory
 templater.render(text, context, variables)        -- string -> string
-templater.build(name, context, variables)         -- template name -> lines
-templater.find(name)                              -- template name -> path
+templater.build(name, context, variables)         -- template -> lines
+templater.insert(name, position)                  -- render and insert into the current buffer
+templater.find(name)                              -- template -> path
+templater.list()                                  -- template file names
 templater.is_template(path)                       -- boolean
 ```
 
@@ -100,5 +137,7 @@ templater.is_template(path)                       -- boolean
 
 - `init.lua` holds the options, lookup, and rendering.
 - `variables.lua` defines the predefined variables.
+- `insert.lua` puts lines into the buffer at a position.
+- `command.lua` defines `:InsertTemplate` and its completion.
 
 Tests are in `tests/templater/`; see [the testing guide](../../docs/testing.md).

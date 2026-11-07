@@ -52,6 +52,22 @@ assert(render("{{shout}}", {
 	end,
 }, { word = "hi", now = 1 }) == "HI", "variables should see extra context fields")
 
+-- Text and number fields of the context are variables too.
+assert(
+	render("{{word}} {{count}}", nil, { word = "hi", count = 3, now = 1 }) == "hi 3",
+	"context fields should be variables"
+)
+assert(render("{{flag}}", nil, { flag = true, now = 1 }) == "{{flag}}", "only text and number fields count")
+assert(render("{{word}}", {
+	word = function()
+		return "fn"
+	end,
+}, { word = "ctx", now = 1 }) == "fn", "variables should beat context fields")
+assert(
+	render("{{word}}", { word = false }, { word = "ctx", now = 1 }) == "{{word}}",
+	"false should disable a context field too"
+)
+
 local calls = 0
 render("no placeholders here", {
 	counted = function()
