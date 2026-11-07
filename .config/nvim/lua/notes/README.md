@@ -24,7 +24,9 @@ the current window rather than creating a split or tab.
   note, and assembles the weekly-specific body.
 - `frontmatter.lua` builds the shared YAML frontmatter. A note type supplies
   only its tag; IDs and UTC timestamps are generated consistently.
-- `template.lua` renders `{{name}}` placeholders in template text.
+- `config.lua` stores the options given to `setup()`.
+- `template.lua` finds a template file by note type and renders its
+  `{{name}}` placeholders.
 - `variables.lua` defines the built-in template variables (`title`, `id`,
   `created_at`, `updated_at`, `date`). A variable is a function that is called
   only when a template uses it. See [Template syntax](#template-syntax).
@@ -90,6 +92,35 @@ Built-in variables:
 | `{{created_at}}`        | UTC ISO 8601 creation time                         |
 | `{{updated_at}}`        | Same as `created_at` for a new note                |
 | `{{date}}`/`{{date:%F}}` | Local date, optionally with an `os.date` format    |
+
+## Template files and options
+
+A note type renders the template named after it, such as `weekly.md`. The
+template is searched for in this order:
+
+1. `templates_dir/<name>.md`, when `templates_dir` is set. A relative path is
+   resolved against the working directory, like the notes themselves, and `~`
+   is expanded.
+2. The bundled `lua/notes/templates/<name>.md`.
+
+`require("notes").setup()` accepts:
+
+```lua
+require("notes").setup({
+	templates_dir = "templates",
+	variables = {
+		-- Adds a variable, or replaces a built-in or note-type one.
+		weekday = function(context)
+			return os.date("%A", context.now)
+		end,
+	},
+})
+```
+
+A variable receives the render context (`title`, `directory`, `now`) and the
+optional `{{name:argument}}` text, and returns a string, a number, or `nil`.
+When several definitions share a name, the user's `variables` win over the note
+type's own variables, which win over the built-ins.
 
 ## Buffer and persistence guarantees
 

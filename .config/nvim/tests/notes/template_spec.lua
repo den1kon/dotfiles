@@ -54,4 +54,78 @@ render("no placeholders here", {
 })
 assert(calls == 0, "unused variables should not be evaluated")
 
+-- Template lookup and building. A temporary runtime directory plays the part of
+-- the bundled templates so the real runtimepath search is exercised.
+local config = require("notes.config")
+
+local runtime_dir = vim.fn.tempname()
+vim.fn.mkdir(runtime_dir .. "/lua/notes/templates", "p")
+vim.fn.writefile({ "bundled {{title}}", "", "{{extra}}" }, runtime_dir .. "/lua/notes/templates/sample.md")
+vim.opt.runtimepath:append(runtime_dir)
+
+local custom_dir = vim.fn.tempname()
+vim.fn.mkdir(custom_dir, "p")
+
+local bundled_path = template.find("sample")
+assert(vim.endswith(bundled_path, "lua/notes/templates/sample.md"), "templates should be found on the runtimepath")
+assert(
+	vim.deep_equal(template.build("sample", context), { "bundled 2026-W40", "", "{{extra}}" }),
+	"build should split the rendered text into lines and keep unmapped placeholders"
+)
+
+local ok_missing, missing_error = pcall(template.find, "does-not-exist")
+assert(not ok_missing and missing_error:find("does%-not%-exist.md"), "a missing template should name the file")
+
+config.setup({ templates_dir = custom_dir })
+assert(template.find("sample") == bundled_path, "bundled template should be used when templates_dir lacks the file")
+
+vim.fn.writefile({ "custom {{title}}" }, custom_dir .. "/sample.md")
+assert(template.find("sample") == custom_dir .. "/sample.md", "templates_dir should take precedence")
+assert(vim.deep_equal(template.build("sample", context), { "custom 2026-W40" }), "build should render the custom file")
+
+local original_directory = vim.fn.getcwd()
+vim.cmd.cd(vim.fn.fnameescape(vim.fs.dirname(custom_dir)))
+config.setup({ templates_dir = vim.fs.basename(custom_dir) })
+assert(
+	vim.fn.resolve(template.find("sample")) == vim.fn.resolve(custom_dir .. "/sample.md"),
+	"a relative templates_dir should resolve against the working directory"
+)
+vim.cmd.cd(vim.fn.fnameescape(original_directory))
+
+vim.fn.writefile({ "{{title}} {{shared}}" }, custom_dir .. "/layers.md")
+config.setup({
+	templates_dir = custom_dir,
+	variables = {
+		shared = function()
+			return "user"
+		end,
+	},
+})
+assert(
+	vim.deep_equal(
+		template.build("layers", context, {
+			shared = function()
+				return "note type"
+			end,
+		}),
+		{ "2026-W40 user" }
+	),
+	"user variables should override note-type variables"
+)
+assert(
+	vim.deep_equal(
+		template.build("layers", context, {
+			title = function()
+				return "note type"
+			end,
+		}),
+		{ "note type user" }
+	),
+	"note-type variables should override built-ins"
+)
+
+config.setup()
+vim.fn.delete(runtime_dir, "rf")
+vim.fn.delete(custom_dir, "rf")
+
 print("notes.template: tests passed")
