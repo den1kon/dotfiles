@@ -8,7 +8,7 @@ structured. Commands use absolute paths so they work from any directory.
 The note tests verify observable Neovim behavior:
 
 - Daily and weekly notes are filled from their templates.
-- A missing previous note produces an empty link line, never a broken link.
+- A missing previous note leaves the link placeholder visible, never a broken link.
 - Existing note content is never overwritten.
 - Repeating a note command does not reload or save an unsaved buffer.
 - User commands are registered by the normal setup path.
@@ -186,7 +186,7 @@ Tests live in one directory per module under `tests/`.
 - `templater/render_spec.lua` checks `{{name}}` rendering: predefined variables,
   arguments, caller and user variables and their precedence, lazy evaluation,
   context fields as variables, `{{lua:…}}` code, and keeping a placeholder when it
-  is unmapped or fails.
+  is unmapped, fails, or its variable returns nil or false (but not an empty string).
 - `templater/directories_spec.lua` checks template lookup across several
   directories (first match wins), any file extension, paths, listing, and which paths count as
   template files.

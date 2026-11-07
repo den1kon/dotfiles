@@ -27,12 +27,12 @@ local function fresh_window()
 	vim.cmd("silent! %bwipeout!")
 end
 
--- A first daily note: filled from the template, empty link line, unsaved.
+-- A first daily note: filled from the template, link placeholder left visible, unsaved.
 vim.cmd("DailyNote 2026-10-04")
 assert(note_name() == "2026-10-04.md", "the note should be named after its date")
 assert(
-	vim.deep_equal(lines(), { "# 2026-10-04", "", "", "", "## TODOs", "" }),
-	"the first note has no previous link: " .. vim.inspect(lines())
+	vim.deep_equal(lines(), { "# 2026-10-04", "", "{{last_daily_note}}", "", "## TODOs", "" }),
+	"the first note has no previous link, so the placeholder stays: " .. vim.inspect(lines())
 )
 assert(vim.api.nvim_win_get_cursor(0)[1] == 6, "the cursor should end on the last line")
 assert(vim.bo.modified, "the generated note should stay unsaved")
@@ -64,7 +64,7 @@ assert(
 
 fresh_window()
 vim.cmd("DailyNote 2026-09-01")
-assert(lines()[3] == "", "a day with no earlier note should have no link")
+assert(lines()[3] == "{{last_daily_note}}", "a day with no earlier note should keep the placeholder")
 
 -- Weekly notes use ISO weeks and their own pattern.
 fresh_window()

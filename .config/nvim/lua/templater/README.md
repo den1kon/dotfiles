@@ -10,7 +10,9 @@ their own variables, and users add more through `setup()`.
 - `{{name:argument}}` passes the text after the first colon to the function.
 - `{{lua:code}}` evaluates Lua; see [Lua code](#lua-code).
 - Whitespace around the name is ignored: `{{ title }}`.
-- A function that returns `nil` inserts nothing; its line stays in place.
+- A function that returns `nil` or `false` had nothing to give: the placeholder
+  stays exactly as written, so you can see it did not apply. An empty string is a
+  real value and inserts nothing.
 - A name with no variable, or text that is not a valid placeholder such as
   `{{some words}}`, is left exactly as written so typos stay visible.
 - A value may contain newlines to insert several lines.
@@ -49,7 +51,7 @@ use templates you trust. Disable the feature with
 
 ## Variables of your own
 
-A variable is a function `fun(context, argument?): string|number|nil`. Callers
+A variable is a function `fun(context, argument?): string|number|false|nil`. Callers
 pass theirs as the third argument of `render()`/`build()`; users add theirs in
 `setup()`:
 
@@ -66,8 +68,8 @@ require("templater").setup({
 ```
 
 When names collide, `setup()` variables win over the caller's, which win over
-the predefined ones. Raising an error inside a variable keeps its placeholder
-and shows a warning.
+the predefined ones. Returning `nil` or `false` keeps the placeholder silently;
+raising an error keeps it and shows a warning.
 
 ## Inserting a template
 

@@ -12,7 +12,8 @@ local DAILY_PATTERN = "^(%d%d%d%d%-%d%d%-%d%d)%.md$"
 local WEEKLY_PATTERN = "^(%d%d%d%d%-W%d%d)%.md$"
 
 -- A {{last_daily_note}}-style variable: a link to the newest earlier note of the
--- same kind in the note's directory, or nothing for the first one.
+-- same kind in the note's directory. For the first one it returns nil, which
+-- leaves the placeholder visible in the note.
 ---@param pattern string Captures the period from a file name
 ---@param label string
 ---@return TemplaterVariable

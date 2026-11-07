@@ -66,7 +66,12 @@ function M.render(text, context, extra_variables)
 			vim.notify(("templater: {{%s}} failed: %s"):format(placeholder, value), vim.log.levels.WARN)
 			return nil
 		end
-		return value ~= nil and tostring(value) or ""
+		-- nil and false mean "nothing to give": keep the placeholder as written.
+		-- An empty string is a real value and renders as nothing.
+		if value == nil or value == false then
+			return nil
+		end
+		return tostring(value)
 	end)
 	return rendered
 end

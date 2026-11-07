@@ -8,10 +8,12 @@ local M = {}
 ---@field title? string
 ---@field [string] any Extra fields supplied by the caller, readable by variables
 
----Returns the text to insert, or nil to insert nothing. The argument is the
----text after the first colon in {{name:argument}}. Raising an error keeps the
----placeholder in the output and shows a warning.
----@alias TemplaterVariable fun(context: TemplaterContext, argument?: string): string|number|nil
+---Returns the text to insert. An empty string is a real value and inserts
+---nothing. Returning nil or false means the variable had nothing to give: the
+---placeholder stays in the output exactly as written, so it is visible that
+---nothing happened. Raising an error does the same and also shows a warning.
+---The argument is the text after the first colon in {{name:argument}}.
+---@alias TemplaterVariable fun(context: TemplaterContext, argument?: string): string|number|false|nil
 
 local ISO_8601_UTC = "!%Y-%m-%dT%H:%M:%SZ"
 

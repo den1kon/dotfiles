@@ -40,7 +40,8 @@ workflow provides:
   or `2026-W40`.
 - `{{last_daily_note}}` and `{{last_weekly_note}}`: a
   `- [[2026-W39.md|Last weekly note]]` line linking the newest earlier note of the
-  same kind in the same directory, or nothing for the first one.
+  same kind in the same directory. For the first note there is nothing to link, so
+  the placeholder is left as written in the note, which shows it did not apply.
 
 A minimal `weekly.md`:
 

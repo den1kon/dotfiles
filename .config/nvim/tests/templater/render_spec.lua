@@ -29,8 +29,23 @@ assert(render("keep % signs {{title}}") == "keep % signs My title", "percent sig
 
 -- Caller variables.
 local function nothing() end
-assert(render("a{{none}}b", { none = nothing }) == "ab", "nil values render as nothing")
-assert(render("a\n{{none}}\nb", { none = nothing }) == "a\n\nb", "nil values keep their line")
+assert(render("a{{none}}b", { none = nothing }) == "a{{none}}b", "a nil value should keep the placeholder")
+assert(render("a\n{{none}}\nb", { none = nothing }) == "a\n{{none}}\nb", "a nil value should keep its line as written")
+assert(render("a{{no}}b", {
+	no = function()
+		return false
+	end,
+}) == "a{{no}}b", "a false value should keep the placeholder")
+assert(render("a{{empty}}b", {
+	empty = function()
+		return ""
+	end,
+}) == "ab", "an empty string is a real value and inserts nothing")
+assert(render("a{{zero}}b", {
+	zero = function()
+		return 0
+	end,
+}) == "a0b", "a falsy-looking number is still a value")
 assert(render("{{lines}}", {
 	lines = function()
 		return "one\ntwo"
@@ -99,7 +114,9 @@ assert(render('{{lua:os.date("%H:%M", 0)}}') == os.date("%H:%M", 0), "lua code m
 assert(render("{{lua:context.title .. '!'}}") == "My title!", "lua should see the context")
 assert(render("{{lua:1 + 2}}") == "3", "lua may return numbers")
 assert(render("{{lua:local n = 4; return n * 2}}") == "8", "lua may be a statement chunk")
-assert(render("{{lua:nil}}") == "", "lua returning nil should insert nothing")
+assert(render("{{lua:nil}}") == "{{lua:nil}}", "lua returning nil should keep the placeholder")
+assert(render("{{lua:false}}") == "{{lua:false}}", "lua returning false should keep the placeholder")
+assert(render("[{{lua:''}}]") == "[]", "lua returning an empty string should insert nothing")
 templater.setup({ variables = { lua = false } })
 assert(render("{{lua:1 + 2}}") == "{{lua:1 + 2}}", "lua can be disabled")
 templater.setup()
