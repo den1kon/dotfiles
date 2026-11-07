@@ -8,6 +8,10 @@ assert(vim.fn.exists(":DailyNote") == 2, "setup should register :DailyNote")
 assert(vim.fn.exists(":WeeklyNote") == 2, "setup should register :WeeklyNote")
 assert(vim.fn.maparg("<leader>dn", "n") ~= "", "setup should register the daily-note keymap")
 assert(vim.fn.maparg("<leader>wn", "n") ~= "", "setup should register the weekly-note keymap")
+assert(
+	require("templater").find("frontmatter"):find("lua/notes/templates/frontmatter.md", 1, true),
+	"setup should make the bundled frontmatter template available"
+)
 
 vim.o.swapfile = false
 local notes_dir = vim.fn.tempname()

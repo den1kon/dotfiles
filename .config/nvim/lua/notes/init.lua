@@ -1,4 +1,5 @@
 local daily = require("notes.daily")
+local note = require("notes.note")
 local weekly = require("notes.weekly")
 
 local M = {}
@@ -6,6 +7,8 @@ local M = {}
 -- Commands accept an explicit period for navigation or testing; mappings use
 -- the current day or ISO week through the modules' defaults.
 function M.setup()
+	note.register_templates()
+
 	vim.api.nvim_create_user_command("DailyNote", function(arguments)
 		daily.open({ date = arguments.args ~= "" and arguments.args or nil })
 	end, {

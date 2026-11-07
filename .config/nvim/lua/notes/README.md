@@ -22,7 +22,9 @@ the current window rather than creating a split or tab.
   `{{last_daily_note}}` variable for `templates/daily.md`.
 - `weekly.lua` determines the ISO week filename and provides the
   `{{last_weekly_note}}` variable for `templates/weekly.md`.
-- `templates/` holds the bundled note bodies, including their YAML frontmatter.
+- `templates/` holds the bundled templates: the daily and weekly note bodies, and
+  `frontmatter.md`, the block for a fleeting note. `setup()` registers the
+  directory with templater, so `:InsertTemplate frontmatter start` finds it.
 - `note.lua` owns behavior shared by every note type: locating a previous note,
   opening the target buffer safely, populating only an empty buffer, and
   rendering a template through [templater](../templater/README.md).

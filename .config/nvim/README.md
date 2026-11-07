@@ -31,8 +31,8 @@ Files under `plugin/` are runtime plugin configuration loaded by Neovim. The
 │   ├── fmt.lua              Conform formatter setup
 │   ├── lsp/                 Language-server modules
 │   ├── digital_notes.lua    Wires the note modules below together
-│   ├── templater/           {{}} templates with Lua support
-│   ├── frontmatter/         Insert frontmatter, refresh updated_at
+│   ├── templater/           {{}} templates, Lua support, :InsertTemplate
+│   ├── frontmatter/         Refresh updated_at on save
 │   ├── markdown-navigation/ Follow links, go back
 │   ├── notes/               Daily and weekly note automation
 │   └── ...                  Focused editor-feature modules
@@ -79,9 +79,8 @@ The note features are small independent modules that do not know about each
 other; [`lua/digital_notes.lua`](lua/digital_notes.lua) combines them.
 
 - [`templater`](lua/templater/README.md) renders `{{name}}` templates, including
-  `{{lua:…}}` code, and finds template files.
-- [`frontmatter`](lua/frontmatter/README.md) inserts frontmatter and refreshes
-  `updated_at` on save.
+  `{{lua:…}}` code, and inserts them with `:InsertTemplate`.
+- [`frontmatter`](lua/frontmatter/README.md) refreshes `updated_at` on save.
 - [`markdown-navigation`](lua/markdown-navigation/README.md) follows links and
   goes back.
 - [`notes`](lua/notes/README.md) opens daily and ISO-weekly notes, generates an

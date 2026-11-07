@@ -3,12 +3,6 @@ assert(ok, "frontmatter should load")
 
 vim.o.swapfile = false
 
-local warnings = {}
-local original_notify = vim.notify
-vim.notify = function(message, level)
-	table.insert(warnings, { message = message, level = level })
-end
-
 local function buffer_lines()
 	return vim.api.nvim_buf_get_lines(0, 0, -1, false)
 end
@@ -18,51 +12,8 @@ local function reset_buffer(lines)
 	vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
 end
 
--- The default block.
-local expected_block = {
-	"---",
-	"id: 1791112654",
-	'created_at: "2026-10-04T11:17:34Z"',
-	'updated_at: "2026-10-04T11:17:34Z"',
-	"tags:",
-	"  - weekly-note",
-	"---",
-	"",
-}
-assert(
-	vim.deep_equal(frontmatter.build("weekly-note", 1791112654), expected_block),
-	"build should use the tag and UTC time"
-)
-
--- Insertion.
 frontmatter.setup()
-assert(vim.fn.exists(":InsertFrontmatter") == 2, "setup should register :InsertFrontmatter")
-
-reset_buffer({ "# Heading", "text" })
-vim.cmd("InsertFrontmatter")
-local inserted = buffer_lines()
-assert(inserted[1] == "---" and inserted[7] == "---" and inserted[8] == "", "the block should go on top")
-assert(inserted[6] == "  - fleeting-note", "the default tag should be fleeting-note")
-assert(inserted[9] == "# Heading" and inserted[10] == "text", "existing text should follow the block")
-
-local before_second_insert = buffer_lines()
-assert(frontmatter.insert() == false, "inserting twice should be refused")
-assert(vim.deep_equal(buffer_lines(), before_second_insert), "a refused insert should not change the buffer")
-assert(#warnings == 1 and warnings[1].level == vim.log.levels.WARN, "a refused insert should warn once")
-
-frontmatter.setup({ tag = "daily-note" })
-reset_buffer({ "text" })
-frontmatter.insert()
-assert(buffer_lines()[6] == "  - daily-note", "the tag option should be used")
-
-frontmatter.setup({
-	generate = function()
-		return { "---", "custom: true", "---" }
-	end,
-})
-reset_buffer({ "text" })
-frontmatter.insert()
-assert(vim.deep_equal(buffer_lines(), { "---", "custom: true", "---", "text" }), "generate should replace the block")
+assert(vim.fn.exists(":InsertFrontmatter") == 0, "creating frontmatter is a template's job, not a command here")
 
 -- Refreshing updated_at in a buffer.
 frontmatter.setup()
@@ -151,6 +102,4 @@ assert(before == 1, "calling setup repeatedly should keep a single save hook")
 
 vim.cmd("enew!")
 vim.fn.delete(directory, "rf")
-vim.notify = original_notify
-
 print("frontmatter: tests passed")

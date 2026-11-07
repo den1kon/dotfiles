@@ -5,7 +5,7 @@ assert(ok, "digital_notes should load: " .. tostring(err))
 for _, command in ipairs({
 	"DailyNote",
 	"WeeklyNote",
-	"InsertFrontmatter",
+	"InsertTemplate",
 	"FollowLink",
 	"FollowLinkInNewTab",
 	"FollowBack",
@@ -14,6 +14,18 @@ for _, command in ipairs({
 end
 assert(vim.fn.maparg("<leader>dn", "n") ~= "", "the workflow should map <leader>dn")
 assert(vim.fn.maparg("<leader>wn", "n") ~= "", "the workflow should map <leader>wn")
+
+assert(vim.fn.exists(":InsertFrontmatter") == 0, "frontmatter is inserted through a template now")
+
+-- The bundled frontmatter template is found and inserted at the start.
+vim.cmd("enew!")
+vim.api.nvim_buf_set_lines(0, 0, -1, false, { "# Heading" })
+vim.cmd("InsertTemplate frontmatter start")
+local inserted = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+assert(inserted[1] == "---" and inserted[#inserted] == "# Heading", "frontmatter should go above the existing text")
+assert(vim.tbl_contains(inserted, "  - fleeting-note"), "the frontmatter template should tag a fleeting note")
+assert(inserted[2]:match("^id: %d+$"), "the frontmatter template should fill in an id")
+vim.cmd("enew!")
 
 local templates = vim.fn.expand("~/gitLair/digital-notes/templates")
 local templater = require("templater")

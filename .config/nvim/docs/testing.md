@@ -197,18 +197,18 @@ Tests live in one directory per module under `tests/`.
 - `templater/insert_spec.lua` runs `:InsertTemplate` for every position, the
   cursor afterwards, rendering with the buffer's details, error reporting, and
   completion.
-- `frontmatter/frontmatter_spec.lua` checks the generated block, insertion and its
-  refusal when frontmatter exists, refreshing only `updated_at` inside the block,
-  the skipped cases (other filetypes, no or unterminated frontmatter), `exclude`,
-  `update_on_save`, and the real save hook through `:write`.
+- `frontmatter/frontmatter_spec.lua` checks refreshing only `updated_at` inside the
+  block, the skipped cases (other filetypes, no or unterminated frontmatter),
+  `exclude`, `update_on_save`, and the real save hook through `:write`.
 - `markdown-navigation/links_spec.lua` checks link finding, picking the link at a
   column, and path resolution including every refusal.
 - `markdown-navigation/navigation_spec.lua` follows links in real buffers: both
   link kinds, a new tab, going back through history, deleted buffers, and the
   warnings for failures.
 - `digital_notes/digital_notes_spec.lua` checks the wiring: every command exists,
-  the template directory is configured, and saving a template keeps its
-  `{{updated_at}}` placeholder while a normal note is refreshed.
+  the bundled frontmatter template inserts at the start of a buffer, the template
+  directory is configured, and saving a template keeps its `{{updated_at}}`
+  placeholder while a normal note is refreshed.
 
 Note tests:
 
