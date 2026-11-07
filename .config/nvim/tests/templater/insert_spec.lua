@@ -41,6 +41,16 @@ check("above", "two-lines.txt", text, { 2, 2 }, { "hello world", "A", "B", "seco
 check("below", "two-lines.txt", text, { 1, 3 }, { "hello world", "A", "B", "second" }, { 2, 0 })
 check("start", "two-lines.txt", text, { 2, 2 }, { "A", "B", "hello world", "second" }, { 4, 2 })
 check("end", "two-lines.txt", text, { 1, 3 }, { "hello world", "second", "A", "B" }, { 1, 3 })
+check("replace", "two-lines.txt", text, { 2, 2 }, { "A", "B" }, { 1, 0 })
+check("replace", "one-line.md", { "" }, { 1, 0 }, { "X" }, { 1, 0 })
+
+-- Replacing is a single undo step that brings the old text back.
+buffer(text, { 2, 2 })
+-- Scripts run in one undo block, so end the setup's block like typing would.
+vim.o.undolevels = vim.o.undolevels
+vim.cmd("InsertTemplate two-lines.txt replace")
+vim.cmd("silent undo")
+assert(vim.deep_equal(lines(), text), "one undo should restore the replaced text: " .. vim.inspect(lines()))
 
 -- A new buffer's lone empty line is replaced rather than kept.
 check("start", "two-lines.txt", { "" }, { 1, 0 }, { "A", "B" }, { 1, 0 })

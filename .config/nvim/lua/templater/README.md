@@ -88,9 +88,11 @@ arguments complete with `<Tab>`.
 | `below`        | New lines below the current line                     | First inserted line   |
 | `start`        | Beginning of the buffer                              | Stays on its text     |
 | `end`          | End of the buffer                                    | Stays on its text     |
+| `replace`      | In place of the whole buffer                         | First line            |
 
 In a new buffer with a single empty line, `start` and `end` replace that line
-instead of keeping it. A bad template name or position shows an error and leaves
+instead of keeping it. `replace` discards the buffer's current text; like every
+position it is one undo step, so `u` brings the text back. A bad template name or position shows an error and leaves
 the buffer unchanged.
 
 ### Choosing from a list
