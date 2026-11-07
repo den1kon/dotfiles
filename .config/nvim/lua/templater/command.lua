@@ -30,6 +30,24 @@ local function complete(argument_lead, command_line, cursor_position)
 	end, require("templater").list())
 end
 
+-- Shows "daily.md" as "daily". Two files that differ only by extension keep
+-- theirs, so every entry stays distinguishable. Only the display changes; the
+-- file that gets inserted is the one chosen.
+---@param names string[]
+---@return fun(name: string): string
+local function display_names(names)
+	local count = {}
+	for _, name in ipairs(names) do
+		local stem = vim.fn.fnamemodify(name, ":r")
+		count[stem] = (count[stem] or 0) + 1
+	end
+
+	return function(name)
+		local stem = vim.fn.fnamemodify(name, ":r")
+		return count[stem] == 1 and stem or name
+	end
+end
+
 ---@param name string
 ---@param position? string
 local function run(name, position)
@@ -51,7 +69,7 @@ local function choose_and_run()
 	end
 
 	local window = vim.api.nvim_get_current_win()
-	vim.ui.select(names, { prompt = "Template" }, function(name)
+	vim.ui.select(names, { prompt = "Template", format_item = display_names(names) }, function(name)
 		if not name then
 			return
 		end

@@ -99,8 +99,10 @@ the buffer unchanged.
 
 `:InsertTemplate` with no arguments asks for the template and then the position
 with `vim.ui.select()`, so whichever picker you have installed (mini.pick,
-snacks, the built-in menu) shows them. The positions are listed with a short
-explanation. Cancelling either prompt inserts nothing, and the text goes to the
+snacks, the built-in menu) shows them. Templates are listed without their
+extension (`daily`, not `daily.md`); two files that differ only by extension keep
+it. Only the display changes, never the files. The positions are listed with a
+short explanation. Cancelling either prompt inserts nothing, and the text goes to the
 window the command was started in even if the picker moved focus. With no
 templates in any directory it shows a warning instead.
 
@@ -112,7 +114,7 @@ plugin. To add a preview or another picker, build one in your configuration from
 
 ```lua
 vim.keymap.set("n", "<leader>if", "<cmd>InsertTemplate frontmatter start<CR>", { desc = "Insert frontmatter" })
-vim.keymap.set("n", "<leader>it", "<cmd>InsertTemplate<CR>", { desc = "Choose a template to insert" })
+vim.keymap.set("n", "<leader>pt", "<cmd>InsertTemplate<CR>", { desc = "Pick template" })
 ```
 
 ## Template files

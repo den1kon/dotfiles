@@ -19,7 +19,7 @@ point; `lua/keybinds.lua` only binds keys to the commands it creates.
 | `<leader>dn`  | `:DailyNote [YYYY-MM-DD]`| Today's note, or the given day          |
 | `<leader>wn`  | `:WeeklyNote [YYYY-Www]` | This ISO week's note, or the given week |
 | `<leader>if`  | `:InsertTemplate frontmatter start` | Inserts frontmatter at the top |
-| `<leader>it`  | `:InsertTemplate`        | Asks which template and where to insert it |
+| `<leader>pt`  | `:InsertTemplate`        | Asks which template and where to insert it |
 | `<leader>fl`, `<leader>ft`, `<leader>gb` | `:FollowLink`, `:FollowLinkInNewTab`, `:FollowBack` | Link navigation |
 
 Notes are opened in the current window and live in Neovim's working directory,

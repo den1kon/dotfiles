@@ -7,7 +7,6 @@ vim.api.nvim_set_keymap(
 	":InsertTemplate frontmatter start<CR>",
 	{ desc = "Insert YAML frontmatter" }
 )
-vim.api.nvim_set_keymap("n", "<leader>it", ":InsertTemplate<CR>", { desc = "Choose a template to insert" })
 vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow link at cursor" })
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
 vim.api.nvim_set_keymap("n", "<leader>gb", ":FollowBack<CR>", { desc = "Go back (Follow Back)" })
@@ -77,6 +76,7 @@ vim.api.nvim_set_keymap(
 )
 vim.api.nvim_set_keymap("n", "<leader>ph", ":Pick help<CR>", { desc = "Pick help" })
 vim.api.nvim_set_keymap("n", "<leader>pb", ":Pick buffers<CR>", { desc = "Pick buffers" })
+vim.api.nvim_set_keymap("n", "<leader>pt", ":InsertTemplate<CR>", { desc = "Pick template" })
 -- LSP
 vim.keymap.set("n", "<leader>lr", function()
 	MiniExtra.pickers.lsp({ scope = "references" })

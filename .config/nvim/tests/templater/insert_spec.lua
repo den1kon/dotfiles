@@ -7,6 +7,8 @@ local directory = vim.fn.tempname()
 vim.fn.mkdir(directory, "p")
 vim.fn.writefile({ "A", "B" }, directory .. "/two-lines.txt")
 vim.fn.writefile({ "X" }, directory .. "/one-line.md")
+vim.fn.writefile({ "md" }, directory .. "/dup.md")
+vim.fn.writefile({ "yaml" }, directory .. "/dup.yaml")
 vim.fn.writefile({ "---", "title: {{title}}", "file: {{filename}}", "---", "" }, directory .. "/frontmatter")
 
 templater.setup({ directories = directory })
@@ -116,6 +118,14 @@ choose({ "two-lines.txt", "below" })
 assert(#prompts == 2, "two prompts should be shown")
 assert(vim.deep_equal(prompts[1].items, templater.list()), "the first prompt should list the templates")
 assert(prompts[1].options.prompt == "Template", "the first prompt should say what it asks for")
+local display = prompts[1].options.format_item
+assert(display("two-lines.txt") == "two-lines", "any extension should be hidden")
+assert(display("one-line.md") == "one-line", ".md should be hidden")
+assert(display("frontmatter") == "frontmatter", "a name without extension is shown as it is")
+assert(
+	display("dup.md") == "dup.md" and display("dup.yaml") == "dup.yaml",
+	"names that differ only by extension keep it"
+)
 assert(
 	vim.deep_equal(prompts[2].items, require("templater.insert").positions),
 	"the second prompt should list the positions"
