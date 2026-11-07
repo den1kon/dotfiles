@@ -1,6 +1,6 @@
 local Formatter = require("fmt")
 
--- slipnote.nvim
+-- Frontmatter and link navigation; the modules are wired in lua/digital_notes.lua
 vim.api.nvim_set_keymap("n", "<leader>if", ":InsertFrontmatter<CR>", { desc = "Insert YAML frontmatter" })
 vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow link at cursor" })
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
@@ -24,11 +24,6 @@ end
 vim.api.nvim_create_user_command("OpenInJira", open_jira_link_from_header, {
 	desc = "Open the Jira issue from the Markdown header under the cursor",
 })
-
-require("templater").setup({
-	directories = { "~/gitLair/digital-notes/templates" },
-})
-require("notes").setup()
 
 -- MiniFiles
 local minifiles_toggle = function()

@@ -30,11 +30,15 @@ Files under `plugin/` are runtime plugin configuration loaded by Neovim. The
 │   ├── keybinds.lua         User commands and mappings
 │   ├── fmt.lua              Conform formatter setup
 │   ├── lsp/                 Language-server modules
+│   ├── digital_notes.lua    Wires the note modules below together
+│   ├── templater/           {{}} templates with Lua support
+│   ├── frontmatter/         Insert frontmatter, refresh updated_at
+│   ├── markdown-navigation/ Follow links, go back
 │   ├── notes/               Daily and weekly note automation
 │   └── ...                  Focused editor-feature modules
 ├── plugin/                  Runtime setup for installed plugins
 ├── ftplugin/                Filetype-local configuration
-├── tests/notes/             Headless tests for note automation
+├── tests/                   Headless tests, one directory per module
 └── docs/                    Longer operational documentation
 ```
 
@@ -48,7 +52,6 @@ Packages are declared in [`init.lua`](init.lua) with Neovim's `vim.pack` API.
 Most plugin-specific setup currently lives under `plugin/`:
 
 - `plugin/mininvim.lua` configures the selected `mini.nvim` modules.
-- `plugin/slipnote.lua` configures wiki-link and frontmatter behavior.
 - `plugin/rendermarkdown.lua` configures rendered Markdown display.
 
 The lock file records resolved package revisions. Treesitter is deliberately
@@ -70,20 +73,30 @@ formatting function used by the keymap layer.
 delegated to focused modules rather than implemented entirely in a mapping.
 For example, daily and weekly note mappings delegate to `lua/notes/`.
 
-## Periodic notes
+## Notes workflow
 
-The note automation opens daily and ISO-weekly Markdown notes, generates an
-initial template only for an empty buffer, and never saves automatically. See
-the [periodic-note overview](lua/notes/README.md) for its modules, data flow,
-and buffer-safety guarantees.
+The note features are small independent modules that do not know about each
+other; [`lua/digital_notes.lua`](lua/digital_notes.lua) combines them.
+
+- [`templater`](lua/templater/README.md) renders `{{name}}` templates, including
+  `{{lua:…}}` code, and finds template files.
+- [`frontmatter`](lua/frontmatter/README.md) inserts frontmatter and refreshes
+  `updated_at` on save.
+- [`markdown-navigation`](lua/markdown-navigation/README.md) follows links and
+  goes back.
+- [`notes`](lua/notes/README.md) opens daily and ISO-weekly notes, generates an
+  initial template only for an empty buffer, and never saves automatically.
+
+The wiring is where one module is told about another, for example
+`frontmatter` skips `templater`'s template files.
 
 ## Documentation and tests
 
 - [`docs/testing.md`](docs/testing.md) contains exact testing commands, the
   abstract test flow, coverage responsibilities, and troubleshooting.
-- [`lua/notes/README.md`](lua/notes/README.md) documents the periodic-note
-  implementation.
-- `tests/notes/` contains plain Lua tests executed inside headless Neovim.
+- The README in each `lua/<module>/` directory documents that module.
+- `tests/` contains plain Lua tests executed inside headless Neovim, one
+  directory per module.
 
 The tests use temporary directories and real Neovim buffers. They do not read
 or write the personal knowledge base.

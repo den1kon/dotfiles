@@ -23,8 +23,6 @@ the current window rather than creating a split or tab.
 - `weekly.lua` determines the ISO week filename and provides the
   `{{last_weekly_note}}` variable for `templates/weekly.md`.
 - `templates/` holds the bundled note bodies, including their YAML frontmatter.
-- `guard.lua` stops slipnote.nvim from rewriting `updated_at` in template files
-  on save. See [Template files and saving](#template-files-and-saving).
 - `note.lua` owns behavior shared by every note type: locating a previous note,
   opening the target buffer safely, populating only an empty buffer, and
   rendering a template through [templater](../templater/README.md).
@@ -99,18 +97,13 @@ require("templater").setup({
 `setup()` in this module takes no options; everything configurable about
 templates belongs to templater.
 
-## Template files and saving
+## Saving templates
 
-Template files contain placeholders such as `updated_at: "{{updated_at}}"`.
-slipnote.nvim normally replaces `updated_at` with the current time whenever a
-Markdown buffer is saved, which would overwrite that placeholder. `setup()`
-therefore wraps slipnote's `update_frontmatter_updated_at` so it does nothing
-for files inside any templater template directory. Every
-other note is refreshed as before. If slipnote.nvim is not installed, nothing
-is wrapped.
-
-The check compares real paths, so symlinks and macOS `/var` versus
-`/private/var` differences do not matter. The test is `templater.is_template()`.
+Template files contain placeholders such as `updated_at: "{{updated_at}}"`. This
+module does not refresh `updated_at` on save; the
+[frontmatter](../frontmatter/README.md) module does, and
+[`digital_notes.lua`](../digital_notes.lua) tells it to skip every file that
+`templater.is_template()` accepts, so saving a template keeps its placeholder.
 
 ## Buffer and persistence guarantees
 

@@ -77,10 +77,12 @@ stylua --check \
   "$nvim_config/lua/templater" \
   "$nvim_config/lua/frontmatter" \
   "$nvim_config/lua/markdown-navigation" \
+  "$nvim_config/lua/digital_notes.lua" \
   "$nvim_config/tests/notes" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
   "$nvim_config/tests/markdown-navigation" \
+  "$nvim_config/tests/digital_notes" \
   "$nvim_config/lua/keybinds.lua"
 ```
 
@@ -121,10 +123,12 @@ stylua --check \
   "$nvim_config/lua/templater" \
   "$nvim_config/lua/frontmatter" \
   "$nvim_config/lua/markdown-navigation" \
+  "$nvim_config/lua/digital_notes.lua" \
   "$nvim_config/tests/notes" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
   "$nvim_config/tests/markdown-navigation" \
+  "$nvim_config/tests/digital_notes" \
   "$nvim_config/lua/keybinds.lua"
 
 for test_file in "$nvim_config"/tests/*/*_spec.lua; do
@@ -197,12 +201,12 @@ Tests live in one directory per module under `tests/`.
 - `markdown-navigation/navigation_spec.lua` follows links in real buffers: both
   link kinds, a new tab, going back through history, deleted buffers, and the
   warnings for failures.
+- `digital_notes/digital_notes_spec.lua` checks the wiring: every command exists,
+  the template directory is configured, and saving a template keeps its
+  `{{updated_at}}` placeholder while a normal note is refreshed.
 
 Note tests:
 
-- `guard_spec.lua` checks that the `updated_at` refresh is skipped for template
-  files, still runs for other notes, and is wrapped only once. It uses a
-  stand-in for slipnote.nvim.
 - `note_spec.lua` checks previous-note lookup, buffer reuse, unsaved state, and
   overwrite protection.
 - `daily_spec.lua` checks the rendered bundled daily template, including the

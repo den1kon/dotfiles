@@ -8,7 +8,6 @@ vim.pack.add({
 	{ src = "https://github.com/folke/tokyonight.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.nvim", version = "main" },
 	{ src = "https://github.com/stevearc/conform.nvim", version = "master" },
-	{ src = "https://github.com/den1kon/slipnote.nvim", version = "main" },
 	{ src = "https://github.com/neovim/nvim-lspconfig", version = "master" },
 	{ src = "https://github.com/mbbill/undotree", version = "master" },
 	{ src = "https://github.com/kdheepak/lazygit.nvim", version = "main" },
@@ -27,6 +26,7 @@ require("lsp").setup()
 
 -- extended minifiles
 require("minifiles").setup()
+require("digital_notes")
 require("keybinds")
 
 require("markdown")
