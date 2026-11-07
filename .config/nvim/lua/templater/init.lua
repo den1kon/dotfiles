@@ -13,13 +13,8 @@ local user = {
 	variables = {},
 }
 
--- Directories that other modules register as defaults; searched after the
--- user's own so a user template always wins.
----@type string[]
-local fallback_directories = {}
-
 ---@class TemplaterOptions
----@field directories? string|string[] Directories searched first for `<name>.md`; `~` is expanded
+---@field directories? string|string[] Directories searched in order for a template; `~` is expanded
 ---@field variables? table<string, TemplaterVariable|false> Added variables; `false` disables one
 
 ---@param options? TemplaterOptions
@@ -31,18 +26,10 @@ function M.setup(options)
 	require("templater.command").register()
 end
 
----Registers a default directory for templates, below the user's directories.
----@param directory string
-function M.add_directory(directory)
-	if not vim.tbl_contains(fallback_directories, directory) then
-		table.insert(fallback_directories, directory)
-	end
-end
-
 ---@return string[] directories In search order
 local function search_directories()
 	local directories = {}
-	for _, directory in ipairs(vim.list_extend(vim.list_extend({}, user.directories), fallback_directories)) do
+	for _, directory in ipairs(user.directories) do
 		table.insert(directories, vim.fn.fnamemodify(vim.fn.expand(directory), ":p"))
 	end
 	return directories

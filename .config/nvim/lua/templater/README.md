@@ -100,13 +100,10 @@ vim.keymap.set("n", "<leader>if", "<cmd>InsertTemplate frontmatter start<CR>", {
 ## Template files
 
 `build(name, context, variables)` reads a template, renders it, and returns its
-lines. Directories are searched in this order:
-
-1. The `directories` given to `setup()`, in order. `~` is expanded and a
-   relative path resolves against the working directory.
-2. Directories that modules register with `add_directory()` as defaults. A
-   module uses this to ship its own bundled templates; a user template of the
-   same name always wins.
+lines. The `directories` given to `setup()` are searched in order and the first
+match wins, so list the directory whose templates should take precedence first.
+`~` is expanded and a relative path resolves against the working directory.
+templater ships no templates of its own.
 
 `find(name)` returns the path or raises an error naming the missing template.
 `list()` returns the file names found in all directories, which is what
@@ -122,7 +119,6 @@ Other tools use it to leave template files alone, for example to skip refreshing
 local templater = require("templater")
 
 templater.setup({ directories = "~/notes/templates", variables = {} }) -- also registers :InsertTemplate
-templater.add_directory(path)                     -- default directory
 templater.render(text, context, variables)        -- string -> string
 templater.build(name, context, variables)         -- template -> lines
 templater.insert(name, position)                  -- render and insert into the current buffer

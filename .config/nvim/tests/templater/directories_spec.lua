@@ -15,28 +15,30 @@ assert(
 	"a template should not be found before directories exist"
 )
 
-templater.add_directory(default_dir)
-templater.add_directory(default_dir)
+templater.setup({ directories = { default_dir } })
 assert(
 	templater.find("sample") == vim.fn.fnamemodify(default_dir, ":p") .. "sample.md",
-	"default directory should be searched"
+	"a configured directory should be searched"
 )
 assert(
 	vim.deep_equal(templater.build("sample", context), { "default T", "", "{{missing}}" }),
 	"build should render the file into lines and keep unmapped placeholders"
 )
 
--- User directories beat defaults and are searched in order.
+-- Directories are searched in order; the first match wins.
 local second_user_dir = vim.fn.tempname()
 vim.fn.mkdir(second_user_dir, "p")
-templater.setup({ directories = { user_dir, second_user_dir } })
-assert(templater.find("sample"):find(default_dir, 1, true), "defaults should be used when the user has no such file")
+templater.setup({ directories = { user_dir, second_user_dir, default_dir } })
+assert(
+	templater.find("sample"):find(default_dir, 1, true),
+	"later directories are used when earlier ones lack the file"
+)
 
 vim.fn.writefile({ "second {{title}}" }, second_user_dir .. "/sample.md")
-assert(templater.find("sample"):find(second_user_dir, 1, true), "later user directories should beat defaults")
+assert(templater.find("sample"):find(second_user_dir, 1, true), "a directory should beat the ones after it")
 
 vim.fn.writefile({ "first {{title}}" }, user_dir .. "/sample.md")
-assert(templater.find("sample"):find(user_dir, 1, true), "earlier user directories should win")
+assert(templater.find("sample"):find(user_dir, 1, true), "the first directory should win")
 assert(vim.deep_equal(templater.build("sample", context), { "first T" }), "build should use the winning file")
 
 -- A single string is accepted, `~` is expanded, and relative paths use the working directory.
@@ -86,11 +88,11 @@ table.sort(sorted)
 assert(vim.deep_equal(listed, sorted), "list should be sorted")
 
 -- Template detection.
-templater.setup({ directories = user_dir })
+templater.setup({ directories = { user_dir, default_dir } })
 assert(templater.is_template(user_dir .. "/weekly.md"), "files in a user directory are templates")
 assert(templater.is_template(user_dir .. "/new-file.md"), "a template that does not exist yet is still a template")
 assert(templater.is_template(user_dir .. "/nested/daily.md"), "subdirectories are templates")
-assert(templater.is_template(default_dir .. "/sample.md"), "files in default directories are templates")
+assert(templater.is_template(default_dir .. "/sample.md"), "files in every configured directory are templates")
 assert(not templater.is_template(vim.fn.tempname() .. ".md"), "other files are not templates")
 assert(not templater.is_template(user_dir .. "-notes/2026-W40.md"), "directories sharing a prefix are not templates")
 templater.setup()

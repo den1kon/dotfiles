@@ -187,8 +187,8 @@ Tests live in one directory per module under `tests/`.
   arguments, caller and user variables and their precedence, lazy evaluation,
   context fields as variables, `{{lua:…}}` code, and keeping a placeholder when it
   is unmapped or fails.
-- `templater/directories_spec.lua` checks template lookup across user and default
-  directories, any file extension, paths, listing, and which paths count as
+- `templater/directories_spec.lua` checks template lookup across several
+  directories (first match wins), any file extension, paths, listing, and which paths count as
   template files.
 - `templater/insert_spec.lua` runs `:InsertTemplate` for every position, the
   cursor afterwards, rendering with the buffer's details, error reporting, and
