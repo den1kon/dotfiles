@@ -1,6 +1,16 @@
 -- Checks the wiring between modules, not the modules themselves.
-local ok, err = pcall(require, "digital_notes")
-assert(ok, "digital_notes should load: " .. tostring(err))
+vim.o.swapfile = false
+
+local templates = vim.fn.tempname()
+vim.fn.mkdir(templates, "p")
+vim.fn.writefile(
+	{ "---", "id: {{id}}", 'updated_at: "{{utc}}"', "tags:", "  - fleeting-note", "---", "" },
+	templates .. "/frontmatter.md"
+)
+
+local ok, digital_notes = pcall(require, "digital_notes")
+assert(ok, "digital_notes should load: " .. tostring(digital_notes))
+digital_notes.setup({ templates = templates })
 
 for _, command in ipairs({
 	"DailyNote",
@@ -12,12 +22,9 @@ for _, command in ipairs({
 }) do
 	assert(vim.fn.exists(":" .. command) == 2, "the workflow should provide :" .. command)
 end
-assert(vim.fn.maparg("<leader>dn", "n") ~= "", "the workflow should map <leader>dn")
-assert(vim.fn.maparg("<leader>wn", "n") ~= "", "the workflow should map <leader>wn")
+assert(vim.fn.exists(":InsertFrontmatter") == 0, "frontmatter is inserted through a template")
 
-assert(vim.fn.exists(":InsertFrontmatter") == 0, "frontmatter is inserted through a template now")
-
--- The bundled frontmatter template is found and inserted at the start.
+-- The configured directory supplies the frontmatter template.
 vim.cmd("enew!")
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "# Heading" })
 vim.cmd("InsertTemplate frontmatter start")
@@ -27,11 +34,7 @@ assert(vim.tbl_contains(inserted, "  - fleeting-note"), "the frontmatter templat
 assert(inserted[2]:match("^id: %d+$"), "the frontmatter template should fill in an id")
 vim.cmd("enew!")
 
-local templates = vim.fn.expand("~/gitLair/digital-notes/templates")
-local templater = require("templater")
-assert(templater.is_template(templates .. "/weekly.md"), "the digital-notes templates should be configured")
-
--- A template buffer keeps its placeholder; any other note gets a timestamp.
+-- A template keeps its placeholder when saved; any other note gets a timestamp.
 local frontmatter = require("frontmatter")
 local function refresh(path)
 	vim.cmd("enew!")
@@ -49,5 +52,7 @@ assert(updated == false and line == 'updated_at: "{{updated_at}}"', "saving a te
 
 updated, line = refresh(vim.fn.tempname() .. "/2026-W40.md")
 assert(updated == true and line ~= 'updated_at: "{{updated_at}}"', "saving a normal note should refresh updated_at")
+
+vim.fn.delete(templates, "rf")
 
 print("digital_notes: tests passed")

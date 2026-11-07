@@ -11,6 +11,10 @@ vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow l
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
 vim.api.nvim_set_keymap("n", "<leader>gb", ":FollowBack<CR>", { desc = "Go back (Follow Back)" })
 
+-- Daily and weekly notes (see lua/digital_notes.lua)
+vim.api.nvim_set_keymap("n", "<leader>dn", ":DailyNote<CR>", { desc = "Open today's daily note" })
+vim.api.nvim_set_keymap("n", "<leader>wn", ":WeeklyNote<CR>", { desc = "Open this week's weekly note" })
+
 local open_jira_link_from_header = function()
 	local line = vim.trim(vim.api.nvim_get_current_line())
 	local issue = line:match("^#%s+(FFMTHV%-%d+)%s*$")

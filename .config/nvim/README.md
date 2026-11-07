@@ -37,11 +37,10 @@ Files under `plugin/` are runtime plugin configuration loaded by Neovim. The
 │   ├── keybinds.lua         User commands and mappings
 │   ├── fmt.lua              Conform formatter setup
 │   ├── lsp/                 Language-server modules
-│   ├── digital_notes.lua    Wires the note modules below together
+│   ├── digital_notes.lua    Wires the note modules; daily and weekly notes
 │   ├── templater/           {{}} templates, Lua support, :InsertTemplate
 │   ├── frontmatter/         Refresh updated_at on save
 │   ├── markdown-navigation/ Follow links, go back
-│   ├── notes/               Daily and weekly note automation
 │   └── ...                  Focused editor-feature modules
 ├── plugin/                  Runtime setup for installed plugins
 ├── ftplugin/                Filetype-local configuration
@@ -50,7 +49,7 @@ Files under `plugin/` are runtime plugin configuration loaded by Neovim. The
 ```
 
 The modules under `lua/` are loaded with `require()`. Related behavior may be
-grouped into a directory, as with `lua/lsp/` and `lua/notes/`, while smaller
+grouped into a directory, as with `lua/lsp/` and `lua/templater/`, while smaller
 features remain single modules.
 
 ## Packages and plugin setup
@@ -78,7 +77,8 @@ formatting function used by the keymap layer.
 
 `lua/keybinds.lua` contains general commands and mappings. Larger workflows are
 delegated to focused modules rather than implemented entirely in a mapping.
-For example, daily and weekly note mappings delegate to `lua/notes/`.
+For example, daily and weekly note mappings run commands that
+`lua/digital_notes.lua` creates.
 
 ## Notes workflow
 
@@ -90,11 +90,12 @@ other; [`lua/digital_notes.lua`](lua/digital_notes.lua) combines them.
 - [`frontmatter`](lua/frontmatter/README.md) refreshes `updated_at` on save.
 - [`markdown-navigation`](lua/markdown-navigation/README.md) follows links and
   goes back.
-- [`notes`](lua/notes/README.md) opens daily and ISO-weekly notes, generates an
-  initial template only for an empty buffer, and never saves automatically.
 
 The wiring is where one module is told about another, for example
-`frontmatter` skips `templater`'s template files.
+`frontmatter` skips `templater`'s template files. Daily and weekly notes are not
+a module: [`digital_notes.lua`](lua/digital_notes.lua) opens a file named after
+the day or week and fills it from a template. See
+[the notes workflow](docs/notes-workflow.md).
 
 ## Documentation and tests
 

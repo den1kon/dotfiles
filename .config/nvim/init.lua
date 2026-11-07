@@ -26,7 +26,7 @@ require("lsp").setup()
 
 -- extended minifiles
 require("minifiles").setup()
-require("digital_notes")
+require("digital_notes").setup()
 require("keybinds")
 
 require("markdown")

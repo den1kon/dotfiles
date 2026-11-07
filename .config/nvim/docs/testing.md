@@ -7,11 +7,11 @@ structured. Commands use absolute paths so they work from any directory.
 
 The note tests verify observable Neovim behavior:
 
-- Generated daily and weekly templates have the expected content.
-- A missing previous note produces no broken navigation link.
+- Daily and weekly notes are filled from their templates.
+- A missing previous note produces an empty link line, never a broken link.
 - Existing note content is never overwritten.
 - Repeating a note command does not reload or save an unsaved buffer.
-- User commands and keymaps are registered by the normal setup path.
+- User commands are registered by the normal setup path.
 
 Tests operate on temporary directories and real Neovim buffers. They never open
 or modify files in the personal knowledge base. Generated test files are removed
@@ -39,10 +39,10 @@ nvim_test_log="${TMPDIR:-/tmp}/nvim-notes-test.log"
 NVIM_LOG_FILE="$nvim_test_log" \
 nvim --headless -u NONE -i NONE \
   --cmd "set runtimepath+=$nvim_config" \
-  -l "$nvim_config/tests/notes/note_spec.lua"
+  -l "$nvim_config/tests/templater/render_spec.lua"
 ```
 
-Replace `note_spec.lua` with another file under `tests/notes/` when needed.
+Replace `render_spec.lua` with another file under `tests/<module>/` when needed.
 
 ## Run all note tests
 
@@ -73,12 +73,10 @@ StyLua's check mode reports formatting differences without rewriting files:
 nvim_config="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 
 stylua --check \
-  "$nvim_config/lua/notes" \
   "$nvim_config/lua/templater" \
   "$nvim_config/lua/frontmatter" \
   "$nvim_config/lua/markdown-navigation" \
   "$nvim_config/lua/digital_notes.lua" \
-  "$nvim_config/tests/notes" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
   "$nvim_config/tests/markdown-navigation" \
@@ -119,12 +117,10 @@ nvim_config="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 nvim_test_log="${TMPDIR:-/tmp}/nvim-notes-test.log"
 
 stylua --check \
-  "$nvim_config/lua/notes" \
   "$nvim_config/lua/templater" \
   "$nvim_config/lua/frontmatter" \
   "$nvim_config/lua/markdown-navigation" \
   "$nvim_config/lua/digital_notes.lua" \
-  "$nvim_config/tests/notes" \
   "$nvim_config/tests/templater" \
   "$nvim_config/tests/frontmatter" \
   "$nvim_config/tests/markdown-navigation" \
@@ -158,8 +154,8 @@ nonzero exit status.
   test.
 - `-i NONE` disables the ShaDa file so tests do not read or write editor state.
 - `--cmd` executes a command before other startup arguments. Here it adds the
-  configuration to `runtimepath`, allowing `require("notes.…")` to find modules
-  under `lua/notes/`.
+  configuration to `runtimepath`, allowing `require("templater.…")` to find modules
+  under `lua/templater/`.
 - `-l FILE` executes `FILE` as Lua and exits after the script completes.
 - `+qa` quits Neovim after the smoke-test assertions pass.
 
@@ -208,26 +204,18 @@ Tests live in one directory per module under `tests/`.
   with Neovim's own buffers (toggling, skipping deleted and non-Markdown ones),
   and the warnings for failures.
 - `digital_notes/digital_notes_spec.lua` checks the wiring: every command exists,
-  the bundled frontmatter template inserts at the start of a buffer, the template
-  directory is configured, and saving a template keeps its `{{updated_at}}`
-  placeholder while a normal note is refreshed.
-
-Note tests:
-
-- `note_spec.lua` checks previous-note lookup, buffer reuse, unsaved state, and
-  overwrite protection.
-- `daily_spec.lua` checks the rendered bundled daily template, including the
-  frontmatter and metadata variables, with and without a previous daily note.
-- `weekly_spec.lua` checks ISO week calculation and the rendered bundled weekly
-  template, including the frontmatter, with and without a previous weekly note.
-- `init_spec.lua` checks command and keymap registration, then executes both
-  public commands in a temporary working directory.
+  the configured directory supplies the frontmatter template, and saving a
+  template keeps its `{{updated_at}}` placeholder while a normal note is refreshed.
+- `digital_notes/notes_spec.lua` runs `:DailyNote` and `:WeeklyNote` in a temporary
+  directory: naming, filling from the template, previous-note links, existing and
+  unsaved notes left alone, today's and this week's defaults, and a missing
+  template.
 
 ## Add a test
 
-1. Put the test beside related coverage in `tests/notes/`, or add a focused
+1. Put the test beside related coverage in `tests/<module>/`, or add a focused
    `*_spec.lua` file for a new module.
-2. Load the production module with `pcall(require, "notes.module")` and assert
+2. Load the production module with `pcall(require, "module.name")` and assert
    that it loaded. This gives a readable failure when the module is missing.
 3. Derive expected values independently and write them as literals. Do not use
    the production builder to create both the actual and expected result.
@@ -252,11 +240,11 @@ Confirm that the command includes:
 nvim_config="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 nvim --headless -u NONE -i NONE \
   --cmd "set runtimepath+=$nvim_config" \
-  -l "$nvim_config/tests/notes/note_spec.lua"
+  -l "$nvim_config/tests/templater/render_spec.lua"
 ```
 
 Also confirm that the Lua module path matches its `require()` name. For example,
-`require("notes.note")` loads `lua/notes/note.lua`.
+`require("templater.variables")` loads `lua/templater/variables.lua`.
 
 ### A test reports `E37: No write since last change`
 
