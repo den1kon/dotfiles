@@ -13,12 +13,6 @@
           alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
           alias lazydots='lazygit --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
         '';
-        functions = ''
-          codex-alt() {
-            CODEX_HOME="$HOME/.codex-chronostasis" \
-              codex -c 'cli_auth_credentials_store="file"' "$@"
-          }
-        '';
         env = ''
           export MANPAGER='nvim +Man!'
           # Apple didn't adopt XDG
