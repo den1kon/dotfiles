@@ -23,7 +23,8 @@ global visual wrapping setting remains unchanged.
 | `<leader>dn`  | `:DailyNote [YYYY-MM-DD]`| Today's note, or the given day          |
 | `<leader>wn`  | `:WeeklyNote [YYYY-Www]` | This ISO week's note, or the given week |
 | `<leader>if`  | `:InsertTemplate frontmatter start` | Inserts frontmatter at the top |
-| `<leader>pt`  | `:PickTemplate`          | Asks which template and where to insert it |
+| `<leader>pt`  | `:PickTags`              | Filters Markdown notes by a YAML tag, then opens the selected note |
+| `<leader>pT`  | `:PickTemplate`          | Asks which template and where to insert it |
 | `<leader>it`  | `:PickTemplate cursor`   | Asks which template, inserts it at the cursor |
 | `<leader>fl`, `<leader>ft`, `<leader>gb` | `:FollowLink`, `:FollowLinkInNewTab`, `:FollowBack` | Link navigation |
 
@@ -37,6 +38,11 @@ like any file you open there.
 
 - `daily.md` and `weekly.md` for the two note types,
 - `frontmatter.md`, the block `<leader>if` inserts for a fleeting note.
+
+`:PickTags` scans top-level `.md` files in `~/gitLair/digital-notes` for YAML
+frontmatter `tags:` lists. Type any part of a tag, including nested tags such as
+`work/itemA`, to filter notes; choosing a result opens that note. Pass
+`setup({ directory = "…" })` to use another notes directory.
 
 Besides templater's [predefined variables](../lua/templater/README.md), the
 workflow provides:

@@ -124,7 +124,7 @@ plugin. To add a preview or another picker, build one in your configuration from
 
 ```lua
 vim.keymap.set("n", "<leader>if", "<cmd>InsertTemplate frontmatter start<CR>", { desc = "Insert frontmatter" })
-vim.keymap.set("n", "<leader>pt", "<cmd>PickTemplate<CR>", { desc = "Pick template and position" })
+vim.keymap.set("n", "<leader>pT", "<cmd>PickTemplate<CR>", { desc = "Pick template and position" })
 vim.keymap.set("n", "<leader>it", "<cmd>PickTemplate cursor<CR>", { desc = "Pick template, insert at cursor" })
 ```
 

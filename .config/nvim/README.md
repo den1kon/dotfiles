@@ -98,6 +98,7 @@ other; [`lua/digital_notes/`](lua/digital_notes/README.md) combines them.
 
 - [`templater`](lua/templater/README.md) renders `{{name}}` templates, including
   `{{lua:…}}` code, and inserts them with `:InsertTemplate` or `:PickTemplate`.
+- `digital_notes` provides `:PickTags` (`<leader>pt`) to find vault notes by YAML tag.
 - [`frontmatter`](lua/frontmatter/README.md) refreshes `updated_at` on save.
 - [`markdown-navigation`](lua/markdown-navigation/README.md) follows links and
   goes back.

@@ -1,12 +1,7 @@
 local Formatter = require("fmt")
 
 -- Frontmatter and link navigation; the modules are wired in lua/digital_notes/
-vim.api.nvim_set_keymap(
-	"n",
-	"<leader>if",
-	":InsertTemplate fleeting start<CR>",
-	{ desc = "Insert YAML frontmatter" }
-)
+vim.api.nvim_set_keymap("n", "<leader>if", ":InsertTemplate fleeting start<CR>", { desc = "Insert YAML frontmatter" })
 vim.api.nvim_set_keymap("n", "<leader>it", ":PickTemplate cursor<CR>", { desc = "Pick template, insert at cursor" })
 vim.api.nvim_set_keymap("n", "<leader>fl", ":FollowLink<CR>", { desc = "Follow link at cursor" })
 vim.api.nvim_set_keymap("n", "<leader>ft", ":FollowLinkInNewTab<CR>", { desc = "Follow link at cursor in new tab" })
@@ -87,7 +82,8 @@ vim.api.nvim_set_keymap(
 )
 vim.api.nvim_set_keymap("n", "<leader>ph", ":Pick help<CR>", { desc = "Pick help" })
 vim.api.nvim_set_keymap("n", "<leader>pb", ":Pick buffers<CR>", { desc = "Pick buffers" })
-vim.api.nvim_set_keymap("n", "<leader>pt", ":PickTemplate<CR>", { desc = "Pick template and position" })
+vim.api.nvim_set_keymap("n", "<leader>pT", ":PickTemplate<CR>", { desc = "Pick template and position" })
+vim.api.nvim_set_keymap("n", "<leader>pt", ":PickTags<CR>", { desc = "Pick notes by YAML tag" })
 -- LSP
 vim.keymap.set("n", "<leader>lr", function()
 	MiniExtra.pickers.lsp({ scope = "references" })

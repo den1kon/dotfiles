@@ -23,5 +23,7 @@ The behavior, commands, templates and variables are described in
   `:WeeklyNote` commands and `{{last_*_note}}` variables built from the types.
 - `previous_note.lua`: finds the newest note before a given period from file
   names alone.
+- `tags.lua`: lists top-level Markdown notes by tags in YAML frontmatter and
+  opens the selected note through MiniPick.
 
 Tests are in `tests/digital_notes/`; see [the testing guide](../../docs/testing.md).

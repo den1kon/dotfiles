@@ -11,6 +11,7 @@ local M = {}
 ---@param options? DigitalNotesOptions
 function M.setup(options)
 	options = options or {}
+	local notes_directory = options.directory or "~/gitLair/digital-notes"
 
 	templater.setup({
 		directories = { options.templates or "~/gitLair/digital-notes/templates" },
@@ -26,6 +27,9 @@ function M.setup(options)
 	require("digital_notes.markdown").setup()
 
 	periodic_notes.register_commands()
+	vim.api.nvim_create_user_command("PickTags", function()
+		require("digital_notes.tags").pick(vim.fn.expand(notes_directory))
+	end, { desc = "Pick Markdown notes by YAML tag" })
 end
 
 return M

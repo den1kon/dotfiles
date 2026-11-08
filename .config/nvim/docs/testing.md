@@ -102,8 +102,8 @@ nvim_test_log="${TMPDIR:-/tmp}/nvim-notes-test.log"
 
 NVIM_LOG_FILE="$nvim_test_log" \
 nvim --headless -i NONE \
-  '+lua for _, command in ipairs({ "DailyNote", "WeeklyNote", "InsertTemplate", "PickTemplate", "FollowLink", "FollowLinkInNewTab", "FollowBack" }) do assert(vim.fn.exists(":" .. command) == 2, command .. " command missing") end' \
-  '+lua for _, key in ipairs({ "<leader>dn", "<leader>wn", "<leader>if", "<leader>it", "<leader>pt", "<leader>fl", "<leader>ft", "<leader>gb" }) do assert(vim.fn.maparg(key, "n") ~= "", key .. " keymap missing") end' \
+  '+lua for _, command in ipairs({ "DailyNote", "WeeklyNote", "InsertTemplate", "PickTemplate", "PickTags", "FollowLink", "FollowLinkInNewTab", "FollowBack" }) do assert(vim.fn.exists(":" .. command) == 2, command .. " command missing") end' \
+  '+lua for _, key in ipairs({ "<leader>dn", "<leader>wn", "<leader>if", "<leader>it", "<leader>pt", "<leader>pT", "<leader>fl", "<leader>ft", "<leader>gb" }) do assert(vim.fn.maparg(key, "n") ~= "", key .. " keymap missing") end' \
   '+lua for _, key in ipairs({ "<leader>b", "<leader>i", "<leader>c" }) do assert(vim.fn.maparg(key, "x") ~= "", key .. " visual keymap missing") end' \
   +qa
 ```
@@ -143,8 +143,8 @@ done
 
 NVIM_LOG_FILE="$nvim_test_log" \
 nvim --headless -i NONE \
-  '+lua for _, command in ipairs({ "DailyNote", "WeeklyNote", "InsertTemplate", "PickTemplate", "FollowLink", "FollowLinkInNewTab", "FollowBack" }) do assert(vim.fn.exists(":" .. command) == 2, command .. " command missing") end' \
-  '+lua for _, key in ipairs({ "<leader>dn", "<leader>wn", "<leader>if", "<leader>it", "<leader>pt", "<leader>fl", "<leader>ft", "<leader>gb" }) do assert(vim.fn.maparg(key, "n") ~= "", key .. " keymap missing") end' \
+  '+lua for _, command in ipairs({ "DailyNote", "WeeklyNote", "InsertTemplate", "PickTemplate", "PickTags", "FollowLink", "FollowLinkInNewTab", "FollowBack" }) do assert(vim.fn.exists(":" .. command) == 2, command .. " command missing") end' \
+  '+lua for _, key in ipairs({ "<leader>dn", "<leader>wn", "<leader>if", "<leader>it", "<leader>pt", "<leader>pT", "<leader>fl", "<leader>ft", "<leader>gb" }) do assert(vim.fn.maparg(key, "n") ~= "", key .. " keymap missing") end' \
   '+lua for _, key in ipairs({ "<leader>b", "<leader>i", "<leader>c" }) do assert(vim.fn.maparg(key, "x") ~= "", key .. " visual keymap missing") end' \
   +qa
 ```
@@ -224,6 +224,8 @@ Tests live in one directory per module under `tests/`.
 - `digital_notes/previous_note_spec.lua` checks the previous-period lookup alone:
   the newest earlier file wins, and other note types, other extensions and
   directories are ignored.
+- `digital_notes/tags_spec.lua` checks extraction of list tags from closed YAML
+  frontmatter and ignores body tags and untagged notes.
 - `digital_notes/notes_spec.lua` runs `:DailyNote` and `:WeeklyNote` in a temporary
   directory: naming, filling from the template, previous-note links, existing and
   unsaved notes left alone, today's and this week's defaults, and a missing
