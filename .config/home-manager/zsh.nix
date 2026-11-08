@@ -25,6 +25,6 @@
           compdef dotfiles=git
         '';
       in
-      nixDaemonFix + aliases + functions + env + completion;
+      nixDaemonFix + aliases + env + completion;
   };
 }
