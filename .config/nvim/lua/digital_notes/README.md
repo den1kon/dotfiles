@@ -14,8 +14,10 @@ The behavior, commands, templates and variables are described in
 
 - `init.lua`: `setup()`. Points templater at the templates directory and adds the
   previous-note variables, tells frontmatter to skip template files, starts
-  link navigation, and registers the note commands. Read it top to bottom to see
-  what is connected to what.
+  link navigation, configures Markdown text width for vault files, and registers
+  the note commands. Read it top to bottom to see what is connected to what.
+- `markdown.lua`: gives Markdown files under `~/gitLair/digital-notes` a local
+  `textwidth` of 100, matching the vault's rumdl formatter configuration.
 - `periodic_notes.lua`: the note types (daily, weekly) as data, the function that
   opens a note and fills it from its template, and the `:DailyNote` and
   `:WeeklyNote` commands and `{{last_*_note}}` variables built from the types.

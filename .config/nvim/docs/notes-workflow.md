@@ -12,6 +12,10 @@ after the day or week, filled from a template.
 `init.lua` calls `require("digital_notes").setup()`. That is the only entry
 point; `lua/keybinds.lua` only binds keys to the commands it creates.
 
+Markdown buffers under `~/gitLair/digital-notes` use `textwidth = 100`, matching
+the vault's `.rumdl.toml` line length. This controls text formatting; Neovim's
+global visual wrapping setting remains unchanged.
+
 ## Commands and keys
 
 | Key           | Command                  | Opens                                   |

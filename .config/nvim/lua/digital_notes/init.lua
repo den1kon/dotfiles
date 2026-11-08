@@ -23,6 +23,7 @@ function M.setup(options)
 	})
 
 	require("markdown-navigation").setup()
+	require("digital_notes.markdown").setup()
 
 	periodic_notes.register_commands()
 end
