@@ -91,6 +91,7 @@ in
   ++ (
     if isMacbook then
       [
+        bash
         nnn
         pnpm
         linear
