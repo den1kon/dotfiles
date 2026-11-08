@@ -7,7 +7,21 @@
     plugins = with pkgs; [
       tmuxPlugins.sensible
       tmuxPlugins.cpu
-      tmuxPlugins.nord
+      {
+        plugin = tmuxPlugins.tokyo-night-tmux.overrideAttrs (old: {
+          postInstall = (old.postInstall or "") + ''
+            # The theme uses associative arrays, which macOS Bash 3 cannot handle.
+            for script in "$out"/share/tmux-plugins/tokyo-night-tmux/*.tmux "$out"/share/tmux-plugins/tokyo-night-tmux/src/*.sh; do
+              substituteInPlace "$script" \
+                --replace-fail '#!/usr/bin/env bash' '#!${pkgs.bash}/bin/bash'
+            done
+          '';
+        });
+        extraConfig = ''
+          set -g @tokyo-night-tmux_theme 'night'
+          set -g @tokyo-night-tmux_transparent 0
+        '';
+      }
       tmuxPlugins.resurrect
       tmuxPlugins.continuum
     ];
