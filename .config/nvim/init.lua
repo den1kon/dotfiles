@@ -11,14 +11,13 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig", version = "master" },
 	{ src = "https://github.com/mbbill/undotree", version = "master" },
 	{ src = "https://github.com/kdheepak/lazygit.nvim", version = "main" },
-	{ src = "https://github.com/chomosuke/typst-preview.nvim", version = "master" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim", version = "main" },
 })
 
 require("treesitter")
 require("fmt") -- conform.nvim
 
-vim.cmd([[colorscheme tokyonight-storm]])
+vim.cmd([[colorscheme tokyonight-night]])
 
 require("marks")
 
@@ -26,7 +25,10 @@ require("lsp").setup()
 
 -- extended minifiles
 require("minifiles").setup()
+
+-- templater/markdown navigation/frontmatter
 require("digital_notes").setup()
+
 require("keybinds")
 
 require("markdown")
