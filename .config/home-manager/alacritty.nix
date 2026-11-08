@@ -1,7 +1,7 @@
 {
   programs.alacritty = {
     enable = true;
-    theme = "tokyo_night_storm";
+    theme = "tokyo_night";
     settings = {
       font = {
         size = 16.0;
