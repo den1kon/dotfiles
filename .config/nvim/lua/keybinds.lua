@@ -4,7 +4,7 @@ local Formatter = require("fmt")
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>if",
-	":InsertTemplate frontmatter start<CR>",
+	":InsertTemplate fleeting start<CR>",
 	{ desc = "Insert YAML frontmatter" }
 )
 vim.api.nvim_set_keymap("n", "<leader>it", ":PickTemplate cursor<CR>", { desc = "Pick template, insert at cursor" })
