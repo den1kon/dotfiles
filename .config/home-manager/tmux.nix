@@ -39,6 +39,7 @@
       setw -g pane-base-index 1
       # Plugins
       set -g @continuum-restore 'on' # Last saved environment is automatically restored when tmux is started.
+      set -g @continuum-boot 'on' # Start Alacritty and restore tmux after macOS restarts.
       set -g @continuum-boot-options 'alacritty,fullscreen'
     '';
   };
