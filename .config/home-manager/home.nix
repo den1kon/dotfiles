@@ -74,6 +74,7 @@ in
     phpactor
     tinymist
     typstyle
+    typst
     astyle
     rumdl
 
