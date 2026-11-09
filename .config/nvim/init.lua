@@ -11,6 +11,7 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig", version = "master" },
 	{ src = "https://github.com/mbbill/undotree", version = "master" },
 	{ src = "https://github.com/kdheepak/lazygit.nvim", version = "main" },
+	{ src = "https://github.com/chomosuke/typst-preview.nvim", version = "master" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim", version = "main" },
 })
 
